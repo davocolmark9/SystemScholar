@@ -15,19 +15,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv('SECRET_KEY', 'default-secret-key')
 
-DEBUG = os.getenv('DEBUG', 'False') == 'True'
+DEBUG = os.getenv('DEBUG', 'False').lower() in ('true', '1', 'yes')
 
 ALLOWED_HOSTS = [h.strip() for h in os.getenv('ALLOWED_HOSTS', '').split(',') if h.strip()]
 RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
 if RENDER_EXTERNAL_HOSTNAME:
     ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
-
-# CSRF trusted origins for Render
-CSRF_TRUSTED_ORIGINS = [
-    'https://systemscholar.onrender.com',
-    'http://localhost:8000',
-    'http://127.0.0.1:8000',
-]
 
 # Application definition
 INSTALLED_APPS = [
@@ -165,3 +158,10 @@ SIMPLE_JWT = {
 LOGIN_REDIRECT_URL = 'dashboard'
 LOGIN_URL = 'login'
 LOGOUT_REDIRECT_URL = 'home'
+
+# CSRF trusted origins for Render
+CSRF_TRUSTED_ORIGINS = [
+    'https://systemscholar.onrender.com',
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
+]
