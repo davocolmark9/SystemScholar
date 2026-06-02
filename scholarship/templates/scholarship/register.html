@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Register - Regional Scholarship Portal{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow">
+                <div class="card-body p-4">
+                    <div class="text-center mb-4">
+                        <i class="bi bi-person-plus display-4 text-primary"></i>
+                        <h4 class="mt-2">Create Account</h4>
+                        <p class="text-muted small">Register to apply for regional scholarships</p>
+                    </div>
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+
+                        <!-- Honeypot field - hidden from humans -->
+                        <div class="mb-3" style="position:absolute;left:-9999px;top:-9999px;" aria-hidden="true">
+                            <label for="id_website">Website</label>
+                            {{ form.website }}
+                        </div>
+
+                        {% for field in form.visible_fields %}
+                            {% if field.name != 'website' %}
+                                <div class="mb-3">
+                                    <label for="{{ field.id_for_label }}" class="form-label">
+                                        {{ field.label }}
+                                        {% if field.field.required %}<span class="text-danger">*</span>{% endif %}
+                                    </label>
+                                    {{ field }}
+                                    {% if field.help_text %}
+                                        <div class="form-text small">{{ field.help_text }}</div>
+                                    {% endif %}
+                                    {% if field.errors %}
+                                        <div class="invalid-feedback d-block">{{ field.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+
+                        <button type="submit" class="btn btn-primary w-100 mb-3">
+                            <i class="bi bi-person-check me-2"></i>Create Account
+                        </button>
+                        <p class="text-center text-muted small mb-0">
+                            Already have an account? <a href="{% url 'login' %}" class="text-decoration-none">Sign in</a>
+                        </p>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

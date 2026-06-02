@@ -1,0 +1,251 @@
+{% extends 'base.html' %}
+{% load scholarship_extras %}
+
+{% block title %}Review Application #{{ application.id }} - Regional Scholarship Portal{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'coordinator_dashboard' %}">Coordinator Dashboard</a></li>
+            <li class="breadcrumb-item active">Review Application</li>
+        </ol>
+    </nav>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h4><i class="bi bi-file-earmark-text me-2 text-primary"></i>Application Review</h4>
+            <p class="text-muted mb-0">ID: <code>{{ application.id }}</code></p>
+        </div>
+        <span class="badge {{ application.status|status_badge_class }} status-badge">{{ application.get_status_display }}</span>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Applicant Info -->
+            <div class="card mb-4">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0"><i class="bi bi-person me-2 text-primary"></i>Applicant Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p class="mb-1"><span class="text-muted small">Full Name</span></p>
+                            <p class="fw-bold">{{ application.applicant.user.get_full_name|default:application.applicant.user.username }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-1"><span class="text-muted small">Email</span></p>
+                            <p class="fw-bold">{{ application.applicant.user.email }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-1"><span class="text-muted small">Phone</span></p>
+                            <p class="fw-bold">{{ application.applicant.phone|default:"—" }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-1"><span class="text-muted small">National ID</span></p>
+                            <p class="fw-bold">{{ application.applicant.national_id|default:"—" }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-1"><span class="text-muted small">Date of Birth</span></p>
+                            <p class="fw-bold">{{ application.applicant.date_of_birth|default:"—" }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-1"><span class="text-muted small">Gender</span></p>
+                            <p class="fw-bold">{{ application.applicant.get_gender_display|default:"—" }}</p>
+                        </div>
+                        <div class="col-md-12">
+                            <p class="mb-1"><span class="text-muted small">Address</span></p>
+                            <p class="fw-bold">{{ application.applicant.address|default:"—" }}, {{ application.applicant.city|default:"" }}, {{ application.applicant.region|default:"" }}, {{ application.applicant.country|default:"" }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Educational Background -->
+            <div class="card mb-4">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0"><i class="bi bi-mortarboard me-2 text-primary"></i>Educational Background</h5>
+                </div>
+                <div class="card-body">
+                    {% if education %}
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Institution</th>
+                                        <th>Degree</th>
+                                        <th>Field</th>
+                                        <th>Period</th>
+                                        <th>GPA</th>
+                                        <th>Country</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for edu in education %}
+                                        <tr>
+                                            <td class="fw-bold">{{ edu.institution_name }}</td>
+                                            <td><span class="badge bg-secondary">{{ edu.get_degree_type_display }}</span></td>
+                                            <td>{{ edu.field_of_study }}</td>
+                                            <td class="small">{{ edu.start_date|date:"Y" }} - {% if edu.is_current %}Present{% else %}{{ edu.end_date|date:"Y"|default:"—" }}{% endif %}</td>
+                                            <td>{{ edu.gpa|default:"—" }}</td>
+                                            <td>{{ edu.country|default:"—" }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted text-center py-3">No educational background records found.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Application Content -->
+            <div class="card mb-4">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0"><i class="bi bi-file-text me-2 text-primary"></i>Application Content</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <h6 class="text-muted small text-uppercase">Scholarship Program</h6>
+                        <p class="fw-bold">{{ application.program.name }}</p>
+                        <p class="text-muted small">Amount: ${{ application.program.amount|floatformat:2 }} | Deadline: {{ application.program.deadline }}</p>
+                    </div>
+                    <div class="mb-4">
+                        <h6 class="text-muted small text-uppercase">Personal Statement</h6>
+                        <div class="bg-light p-3 rounded">{{ application.personal_statement|linebreaks }}</div>
+                    </div>
+                    {% if application.financial_need_statement %}
+                        <div class="mb-4">
+                            <h6 class="text-muted small text-uppercase">Financial Need Statement</h6>
+                            <div class="bg-light p-3 rounded">{{ application.financial_need_statement|linebreaks }}</div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Activity Log -->
+            <div class="card">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0"><i class="bi bi-clock-history me-2 text-primary"></i>Audit Trail</h5>
+                </div>
+                <div class="card-body">
+                    {% if activity_logs %}
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Timestamp</th>
+                                        <th>Action</th>
+                                        <th>Description</th>
+                                        <th>Performed By</th>
+                                        <th>IP Address</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for log in activity_logs %}
+                                        <tr>
+                                            <td class="small">{{ log.timestamp|date:"M d, Y H:i:s" }}</td>
+                                            <td><span class="badge bg-secondary">{{ log.get_action_display }}</span></td>
+                                            <td class="small">{{ log.description }}</td>
+                                            <td class="small">{{ log.performed_by.get_full_name|default:log.performed_by.username|default:"System" }}</td>
+                                            <td class="small text-muted">{{ log.ip_address|default:"—" }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted text-center py-3">No activity recorded yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <!-- Status Update -->
+            <div class="card mb-4">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0"><i class="bi bi-sliders me-2 text-primary"></i>Update Status</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        {% for field in status_form %}
+                            <div class="mb-3">
+                                <label class="form-label small">{{ field.label }}</label>
+                                {{ field }}
+                                {% if field.errors %}
+                                    <div class="invalid-feedback d-block">{{ field.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-check-circle me-2"></i>Update Status
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Documents -->
+            <div class="card mb-4">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0"><i class="bi bi-files me-2 text-primary"></i>KYC Documents</h5>
+                </div>
+                <div class="card-body">
+                    {% if documents %}
+                        {% for doc in documents %}
+                            <div class="document-card card mb-3">
+                                <div class="card-body p-3">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <h6 class="small fw-bold mb-0">{{ doc.get_document_type_display }}</h6>
+                                        <span class="badge {{ doc.verification_status|doc_status_badge_class }}">{{ doc.get_verification_status_display }}</span>
+                                    </div>
+                                    <p class="text-muted small mb-2">{{ doc.file_name|default:"Document" }}</p>
+                                    <p class="text-muted small mb-2">Uploaded: {{ doc.uploaded_at|date:"M d, Y" }}</p>
+
+                                    <!-- Document Verification Form -->
+                                    <form method="post" action="{% url 'verify_document' doc_id=doc.pk %}" class="mt-2">
+                                        {% csrf_token %}
+                                        <div class="input-group input-group-sm">
+                                            <select name="verification_status" class="form-select form-select-sm">
+                                                <option value="pending" {% if doc.verification_status == 'pending' %}selected{% endif %}>Pending</option>
+                                                <option value="verified" {% if doc.verification_status == 'verified' %}selected{% endif %}>Verified</option>
+                                                <option value="rejected" {% if doc.verification_status == 'rejected' %}selected{% endif %}>Rejected</option>
+                                            </select>
+                                            <button type="submit" class="btn btn-outline-primary btn-sm">Update</button>
+                                        </div>
+                                        <textarea name="verification_notes" class="form-control form-control-sm mt-2" rows="2" placeholder="Verification notes...">{{ doc.verification_notes }}</textarea>
+                                    </form>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted text-center py-3">No documents uploaded.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Review Info -->
+            <div class="card">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0"><i class="bi bi-info-circle me-2 text-primary"></i>Review Info</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-1"><span class="text-muted small">Submitted</span></p>
+                    <p class="fw-bold">{{ application.submitted_at|date:"M d, Y H:i"|default:"Not submitted" }}</p>
+
+                    <p class="mb-1"><span class="text-muted small">Last Reviewed</span></p>
+                    <p class="fw-bold">{{ application.reviewed_at|date:"M d, Y H:i"|default:"Not reviewed" }}</p>
+
+                    <p class="mb-1"><span class="text-muted small">Reviewed By</span></p>
+                    <p class="fw-bold">{{ application.reviewed_by.get_full_name|default:application.reviewed_by.username|default:"—" }}</p>
+
+                    <p class="mb-1"><span class="text-muted small">Created</span></p>
+                    <p class="fw-bold">{{ application.created_at|date:"M d, Y H:i" }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

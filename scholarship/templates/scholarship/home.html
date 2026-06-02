@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Home - Regional Scholarship Portal{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="container text-center">
+        <h1 class="display-4 fw-bold mb-3">Empowering Futures Through Education</h1>
+        <p class="lead mb-4 opacity-75">Apply for regional scholarships, upload KYC documents securely, and track your application status in real-time.</p>
+        {% if not user.is_authenticated %}
+            <a href="{% url 'register' %}" class="btn btn-light btn-lg me-2 px-4">Get Started</a>
+            <a href="{% url 'login' %}" class="btn btn-outline-light btn-lg px-4">Sign In</a>
+        {% else %}
+            <a href="{% url 'dashboard' %}" class="btn btn-light btn-lg px-4">Go to Dashboard</a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="container">
+    <div class="row mb-5">
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 text-center p-4">
+                <div class="card-body">
+                    <i class="bi bi-cloud-upload display-4 text-primary mb-3"></i>
+                    <h5 class="card-title">Secure Document Upload</h5>
+                    <p class="card-text text-muted">Upload KYC documents safely with Cloudinary integration. All files are encrypted and stored securely.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 text-center p-4">
+                <div class="card-body">
+                    <i class="bi bi-shield-check display-4 text-success mb-3"></i>
+                    <h5 class="card-title">Anti-IDOR Protection</h5>
+                    <p class="card-text text-muted">Your data is protected. Students can only access their own applications with UUID-based identifiers.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 text-center p-4">
+                <div class="card-body">
+                    <i class="bi bi-graph-up display-4 text-warning mb-3"></i>
+                    <h5 class="card-title">Real-Time Tracking</h5>
+                    <p class="card-text text-muted">Track your application status from submission to approval with full audit trail transparency.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h3 class="mb-4"><i class="bi bi-award me-2"></i>Available Scholarship Programs</h3>
+    {% if programs %}
+        <div class="row">
+            {% for program in programs %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h5 class="card-title">{{ program.name }}</h5>
+                                <span class="badge bg-success">Open</span>
+                            </div>
+                            <p class="card-text text-muted small">{{ program.description|truncatewords:20 }}</p>
+                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                <span class="fw-bold text-primary">${{ program.amount|floatformat:0 }}</span>
+                                <span class="text-muted small"><i class="bi bi-calendar-event me-1"></i>Deadline: {{ program.deadline }}</span>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-transparent border-0 pb-3">
+                            {% if user.is_authenticated %}
+                                <a href="{% url 'apply_scholarship' %}" class="btn btn-primary w-100">Apply Now</a>
+                            {% else %}
+                                <a href="{% url 'register' %}" class="btn btn-outline-primary w-100">Register to Apply</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <i class="bi bi-inbox"></i>
+            <h5>No Active Programs</h5>
+            <p>There are no active scholarship programs at this time. Please check back later.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

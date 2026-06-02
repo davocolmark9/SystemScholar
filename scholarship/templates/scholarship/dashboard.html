@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+{% load scholarship_extras %}
+
+{% block title %}My Dashboard - Regional Scholarship Portal{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3><i class="bi bi-grid me-2 text-primary"></i>My Dashboard</h3>
+            <p class="text-muted mb-0">Welcome back, {{ user.get_full_name|default:user.username }}</p>
+        </div>
+        <a href="{% url 'apply_scholarship' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle me-2"></i>New Application
+        </a>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card stats-card">
+                <div class="stats-number">{{ applications.count }}</div>
+                <div class="text-muted small">Total Applications</div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card stats-card">
+                <div class="stats-number text-warning">{{ applications|length }}</div>
+                <div class="text-muted small">In Progress</div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card stats-card">
+                <div class="stats-number text-success">{{ approved_count|default:0 }}</div>
+                <div class="text-muted small">Approved</div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card stats-card">
+                <div class="stats-number text-info">{{ documents.count }}</div>
+                <div class="text-muted small">Documents Uploaded</div>
+            </div>
+        </div>
+    </div>
+
+    <h5 class="mb-3"><i class="bi bi-file-earmark-text me-2"></i>My Applications</h5>
+    {% if applications %}
+        <div class="row">
+            {% for app in applications %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h6 class="card-title mb-0">{{ app.program.name }}</h6>
+                                <span class="badge {{ app.status|status_badge_class }} status-badge">{{ app.get_status_display }}</span>
+                            </div>
+                            <p class="text-muted small mb-2">ID: <code class="small">{{ app.id }}</code></p>
+                            <p class="text-muted small mb-3">{{ app.personal_statement|truncatewords:15 }}</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="text-muted small">
+                                    <i class="bi bi-calendar me-1"></i>{{ app.created_at|date:"M d, Y" }}
+                                </span>
+                                <span class="text-muted small">
+                                    <i class="bi bi-file-earmark me-1"></i>{{ app.documents.count }} doc{{ app.documents.count|pluralize }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-transparent border-0 pb-3">
+                            <a href="{% url 'application_detail' pk=app.pk %}" class="btn btn-outline-primary btn-sm w-100">
+                                <i class="bi bi-eye me-1"></i>View Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="card">
+            <div class="card-body empty-state">
+                <i class="bi bi-inbox"></i>
+                <h5>No Applications Yet</h5>
+                <p class="text-muted">Start your scholarship journey by creating your first application.</p>
+                <a href="{% url 'apply_scholarship' %}" class="btn btn-primary">Apply Now</a>
+            </div>
+        </div>
+    {% endif %}
+
+    <h5 class="mb-3 mt-4"><i class="bi bi-files me-2"></i>Recent Documents</h5>
+    {% if documents %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Document Type</th>
+                        <th>Application</th>
+                        <th>Status</th>
+                        <th>Uploaded</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for doc in documents|slice:":5" %}
+                        <tr>
+                            <td><i class="bi bi-file-earmark-text me-2 text-primary"></i>{{ doc.get_document_type_display }}</td>
+                            <td><code class="small">{{ doc.application.id|truncatechars:8 }}</code></td>
+                            <td><span class="badge {{ doc.verification_status|doc_status_badge_class }}">{{ doc.get_verification_status_display }}</span></td>
+                            <td class="text-muted small">{{ doc.uploaded_at|date:"M d, Y" }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="card">
+            <div class="card-body empty-state py-4">
+                <i class="bi bi-cloud-upload"></i>
+                <p class="text-muted mb-0">No documents uploaded yet. Documents will appear here once you upload them to an application.</p>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
