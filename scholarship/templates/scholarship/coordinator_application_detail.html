@@ -148,7 +148,13 @@
                                             <td class="small">{{ log.timestamp|date:"M d, Y H:i:s" }}</td>
                                             <td><span class="badge bg-secondary">{{ log.get_action_display }}</span></td>
                                             <td class="small">{{ log.description }}</td>
-                                            <td class="small">{{ log.performed_by.get_full_name|default:log.performed_by.username|default:"System" }}</td>
+                                            <td class="small">
+    {% if log.performed_by %}
+        {{ log.performed_by.get_full_name|default:log.performed_by.username }}
+    {% else %}
+        System
+    {% endif %}
+</td>
                                             <td class="small text-muted">{{ log.ip_address|default:"—" }}</td>
                                         </tr>
                                     {% endfor %}
@@ -239,7 +245,11 @@
                     <p class="fw-bold">{{ application.reviewed_at|date:"M d, Y H:i"|default:"Not reviewed" }}</p>
 
                     <p class="mb-1"><span class="text-muted small">Reviewed By</span></p>
-                    <p class="fw-bold">{{ application.reviewed_by.get_full_name|default:application.reviewed_by.username|default:"—" }}</p>
+                   {% if application.reviewed_by %}
+    <p class="fw-bold">{{ application.reviewed_by.get_full_name|default:application.reviewed_by.username }}</p>
+{% else %}
+    <p class="fw-bold">—</p>
+{% endif %}
 
                     <p class="mb-1"><span class="text-muted small">Created</span></p>
                     <p class="fw-bold">{{ application.created_at|date:"M d, Y H:i" }}</p>
