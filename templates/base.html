@@ -5,165 +5,672 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Regional Scholarship Portal{% endblock %}</title>
+
+    <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+
     <style>
         :root {
-            --primary-color: #1a5276;
-            --secondary-color: #2874a6;
-            --accent-color: #f39c12;
-            --success-color: #27ae60;
-            --danger-color: #c0392b;
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --primary-light: #dbeafe;
+            --secondary: #64748b;
+            --success: #059669;
+            --success-light: #d1fae5;
+            --warning: #d97706;
+            --warning-light: #fef3c7;
+            --danger: #dc2626;
+            --danger-light: #fee2e2;
+            --info: #0891b2;
+            --info-light: #cffafe;
+            --dark: #0f172a;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-400: #94a3b8;
+            --gray-500: #64748b;
+            --gray-600: #475569;
+            --gray-700: #334155;
+            --gray-800: #1e293b;
+            --gray-900: #0f172a;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
+
+        * {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
         body {
-            background-color: #f8f9fa;
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--gray-50);
+            color: var(--gray-800);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
         }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            color: var(--gray-900);
+            letter-spacing: -0.025em;
+        }
+
+        .brand-font {
+            font-family: 'Playfair Display', serif;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--gray-200);
+            padding: 0.75rem 0;
+        }
+
         .navbar-brand {
             font-weight: 700;
-            letter-spacing: -0.5px;
+            font-size: 1.25rem;
+            color: var(--primary) !important;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
-        .navbar {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+
+        .navbar-brand i {
+            font-size: 1.5rem;
         }
+
+        .nav-link {
+            font-weight: 500;
+            color: var(--gray-600) !important;
+            padding: 0.5rem 1rem !important;
+            border-radius: var(--radius-sm);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .nav-link:hover {
+            color: var(--primary) !important;
+            background: var(--primary-light);
+        }
+
+        .nav-link.active {
+            color: var(--primary) !important;
+            background: var(--primary-light);
+        }
+
+        /* Cards */
         .card {
-            border: none;
-            border-radius: 12px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-            transition: transform 0.2s, box-shadow 0.2s;
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            background: white;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            overflow: hidden;
         }
+
         .card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            box-shadow: var(--shadow-md);
         }
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            border: none;
-            border-radius: 8px;
-            padding: 10px 24px;
+
+        .card-header {
+            background: white;
+            border-bottom: 1px solid var(--gray-100);
+            padding: 1.25rem 1.5rem;
             font-weight: 600;
         }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        /* Buttons */
+        .btn {
+            font-weight: 500;
+            padding: 0.625rem 1.25rem;
+            border-radius: var(--radius-sm);
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+        }
+
         .btn-primary:hover {
-            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            transform: translateY(-1px);
+            box-shadow: 0 8px 12px -2px rgba(37, 99, 235, 0.25);
+            color: white;
+        }
+
+        .btn-outline-primary {
+            border: 1.5px solid var(--primary);
+            color: var(--primary);
+            background: transparent;
+        }
+
+        .btn-outline-primary:hover {
+            background: var(--primary);
+            color: white;
             transform: translateY(-1px);
         }
-        .status-badge {
-            font-size: 0.75rem;
-            font-weight: 600;
-            padding: 6px 14px;
-            border-radius: 20px;
+
+        .btn-outline-secondary {
+            border: 1.5px solid var(--gray-300);
+            color: var(--gray-600);
+            background: transparent;
         }
-        .hero-section {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+
+        .btn-outline-secondary:hover {
+            background: var(--gray-100);
+            color: var(--gray-800);
+            border-color: var(--gray-400);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success), #047857);
             color: white;
-            padding: 80px 0;
-            margin-bottom: 40px;
+            box-shadow: 0 4px 6px -1px rgba(5, 150, 105, 0.2);
         }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger), #b91c1c);
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 0.375rem 0.875rem;
+            font-size: 0.875rem;
+        }
+
+        .btn-lg {
+            padding: 0.875rem 1.75rem;
+            font-size: 1.125rem;
+        }
+
+        /* Forms */
         .form-control, .form-select {
-            border-radius: 8px;
-            border: 1.5px solid #e0e0e0;
-            padding: 12px 16px;
+            border: 1.5px solid var(--gray-200);
+            border-radius: var(--radius-sm);
+            padding: 0.625rem 0.875rem;
+            font-size: 0.9375rem;
+            transition: var(--transition);
+            background: white;
         }
+
         .form-control:focus, .form-select:focus {
-            border-color: var(--secondary-color);
-            box-shadow: 0 0 0 3px rgba(40, 116, 166, 0.1);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            background: white;
         }
-        .document-card {
-            border-left: 4px solid var(--accent-color);
+
+        .form-label {
+            font-weight: 500;
+            font-size: 0.875rem;
+            color: var(--gray-700);
+            margin-bottom: 0.375rem;
         }
+
+        .form-text {
+            color: var(--gray-500);
+            font-size: 0.8125rem;
+        }
+
+        /* Badges */
+        .badge {
+            font-weight: 500;
+            padding: 0.375rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.8125rem;
+        }
+
+        .bg-primary-soft { background: var(--primary-light); color: var(--primary-dark); }
+        .bg-success-soft { background: var(--success-light); color: var(--success); }
+        .bg-warning-soft { background: var(--warning-light); color: var(--warning); }
+        .bg-danger-soft { background: var(--danger-light); color: var(--danger); }
+        .bg-info-soft { background: var(--info-light); color: var(--info); }
+        .bg-secondary-soft { background: var(--gray-100); color: var(--gray-600); }
+
+        /* Stats Cards */
+        .stats-card {
+            padding: 1.5rem;
+            text-align: center;
+            border: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stats-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+        }
+
+        .stats-card.border-success::before { background: linear-gradient(90deg, var(--success), #047857); }
+        .stats-card.border-warning::before { background: linear-gradient(90deg, var(--warning), #b45309); }
+        .stats-card.border-danger::before { background: linear-gradient(90deg, var(--danger), #b91c1c); }
+
+        .stats-number {
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Tables */
+        .table {
+            font-size: 0.9375rem;
+        }
+
+        .table thead th {
+            background: var(--gray-50);
+            font-weight: 600;
+            color: var(--gray-700);
+            border-bottom: 2px solid var(--gray-200);
+            padding: 0.875rem 1rem;
+            font-size: 0.8125rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .table tbody td {
+            padding: 1rem;
+            vertical-align: middle;
+            border-bottom: 1px solid var(--gray-100);
+            color: var(--gray-700);
+        }
+
+        .table tbody tr {
+            transition: var(--transition);
+        }
+
+        .table tbody tr:hover {
+            background: var(--gray-50);
+        }
+
+        /* Timeline */
         .timeline-item {
             position: relative;
-            padding-left: 30px;
-            border-left: 2px solid #e0e0e0;
-            margin-bottom: 20px;
+            padding-left: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-left: 2px solid var(--gray-200);
         }
+
         .timeline-item::before {
             content: '';
             position: absolute;
-            left: -6px;
+            left: -5px;
             top: 0;
-            width: 10px;
-            height: 10px;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
-            background: var(--secondary-color);
+            background: var(--primary);
         }
-        .stats-card {
-            text-align: center;
-            padding: 24px;
+
+        .timeline-item:last-child {
+            border-left: 2px solid transparent;
+            padding-bottom: 0;
         }
-        .stats-number {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: var(--primary-color);
+
+        /* Document Cards */
+        .document-card {
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-md);
+            transition: var(--transition);
         }
-        .filter-bar {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 24px;
+
+        .document-card:hover {
+            border-color: var(--gray-300);
+            box-shadow: var(--shadow-md);
         }
-        .table-hover tbody tr:hover {
-            background-color: rgba(40, 116, 166, 0.04);
+
+        /* Progress Bar */
+        .progress {
+            height: 6px;
+            background: var(--gray-200);
+            border-radius: 9999px;
+            overflow: hidden;
         }
+
+        .progress-bar {
+            border-radius: 9999px;
+            transition: width 0.6s ease;
+        }
+
+        /* Breadcrumb */
+        .breadcrumb {
+            background: transparent;
+            padding: 0;
+            margin-bottom: 1.5rem;
+            font-size: 0.875rem;
+        }
+
+        .breadcrumb-item a {
+            color: var(--gray-500);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .breadcrumb-item a:hover {
+            color: var(--primary);
+        }
+
+        .breadcrumb-item.active {
+            color: var(--gray-700);
+            font-weight: 500;
+        }
+
+        /* Empty State */
         .empty-state {
             text-align: center;
-            padding: 60px 20px;
-            color: #6c757d;
+            padding: 3rem 1.5rem;
+            color: var(--gray-400);
         }
+
         .empty-state i {
-            font-size: 4rem;
-            margin-bottom: 20px;
-            color: #dee2e6;
+            font-size: 3rem;
+            display: block;
+            margin-bottom: 1rem;
+            opacity: 0.5;
         }
-        {% block extra_css %}{% endblock %}
+
+        /* Filter Bar */
+        .filter-bar {
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            padding: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Avatar */
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.875rem;
+            flex-shrink: 0;
+        }
+
+        .avatar-sm {
+            width: 32px;
+            height: 32px;
+            font-size: 0.75rem;
+        }
+
+        .avatar-lg {
+            width: 48px;
+            height: 48px;
+            font-size: 1rem;
+        }
+
+        /* Alerts */
+        .alert {
+            border: none;
+            border-radius: var(--radius-md);
+            padding: 1rem 1.25rem;
+        }
+
+        .alert-info {
+            background: var(--info-light);
+            color: var(--info);
+        }
+
+        .alert-warning {
+            background: var(--warning-light);
+            color: var(--warning);
+        }
+
+        .alert-danger {
+            background: var(--danger-light);
+            color: var(--danger);
+        }
+
+        .alert-success {
+            background: var(--success-light);
+            color: var(--success);
+        }
+
+        /* Pagination */
+        .pagination .page-link {
+            border: 1px solid var(--gray-200);
+            color: var(--gray-600);
+            padding: 0.5rem 0.875rem;
+            font-weight: 500;
+            border-radius: var(--radius-sm);
+            margin: 0 0.125rem;
+            transition: var(--transition);
+        }
+
+        .pagination .page-link:hover {
+            background: var(--primary-light);
+            color: var(--primary);
+            border-color: var(--primary-light);
+        }
+
+        .pagination .page-item.active .page-link {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 50%, #1e3a8a 100%);
+            color: white;
+            padding: 5rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .hero-section h1 {
+            color: white;
+            font-weight: 700;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in {
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-section {
+                padding: 3rem 0;
+            }
+
+            .stats-number {
+                font-size: 1.75rem;
+            }
+
+            .card-body {
+                padding: 1.25rem;
+            }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--gray-100);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--gray-300);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--gray-400);
+        }
+
+        /* Status Badge Classes */
+        .status-badge {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.75rem;
+        }
+
+        /* Input Groups */
+        .input-group .form-control,
+        .input-group .form-select {
+            border-right: none;
+        }
+
+        .input-group .btn {
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+        }
+
+        /* Floating Labels Enhancement */
+        .form-floating > .form-control:focus ~ label,
+        .form-floating > .form-control:not(:placeholder-shown) ~ label {
+            color: var(--primary);
+        }
+
+        /* Section Headers */
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--gray-100);
+        }
+
+        .section-header h5 {
+            margin: 0;
+            font-weight: 600;
+        }
+
+        .section-header i {
+            color: var(--primary);
+            font-size: 1.25rem;
+        }
     </style>
+
+    {% block extra_css %}{% endblock %}
+<base target="_blank">
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark">
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg sticky-top">
         <div class="container">
             <a class="navbar-brand" href="{% url 'home' %}">
-                <i class="bi bi-mortarboard-fill me-2"></i>Regional Scholarship Portal
+                <i class="bi bi-mortarboard-fill"></i>
+                <span>Scholarship Portal</span>
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
+
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'home' %}">
+                            <i class="bi bi-house me-1"></i>Home
+                        </a>
+                    </li>
+
                     {% if user.is_authenticated %}
-                        {% if user.is_staff %}
+                        {% if user.is_staff or user.is_superuser %}
                             <li class="nav-item">
-                                <a class="nav-link" href="{% url 'coordinator_dashboard' %}">
-                                    <i class="bi bi-speedometer2 me-1"></i>Coordinator Panel
+                                <a class="nav-link {% if request.resolver_match.url_name == 'coordinator_dashboard' %}active{% endif %}" href="{% url 'coordinator_dashboard' %}">
+                                    <i class="bi bi-shield-check me-1"></i>Coordinator
                                 </a>
                             </li>
                         {% endif %}
+
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'dashboard' %}">
-                                <i class="bi bi-grid me-1"></i>My Dashboard
+                            <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}">
+                                <i class="bi bi-grid me-1"></i>Dashboard
                             </a>
                         </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
-                                <i class="bi bi-person-circle me-1"></i>{{ user.get_full_name|default:user.username }}
+
+                        <li class="nav-item dropdown ms-lg-2">
+                            <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" href="#" role="button" data-bs-toggle="dropdown">
+                                <div class="avatar avatar-sm bg-primary text-white">
+                                    {{ user.first_name|first|default:user.username|first|upper }}
+                                </div>
+                                <span class="d-none d-lg-inline">{{ user.get_full_name|default:user.username }}</span>
                             </a>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li><a class="dropdown-item" href="{% url 'profile_setup' %}"><i class="bi bi-person-gear me-2"></i>Profile</a></li>
-                                <li><hr class="dropdown-divider"></li>
+                            <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg" style="border-radius: var(--radius-lg);">
+                                <li><a class="dropdown-item py-2" href="{% url 'profile_setup' %}"><i class="bi bi-person-gear me-2 text-primary"></i>Profile</a></li>
+                                <li><hr class="dropdown-divider my-1"></li>
                                 <li>
                                     <form method="post" action="{% url 'logout' %}" class="d-inline">
                                         {% csrf_token %}
-                                        <button type="submit" class="dropdown-item text-danger"><i class="bi bi-box-arrow-right me-2"></i>Logout</button>
+                                        <button type="submit" class="dropdown-item py-2 text-danger">
+                                            <i class="bi bi-box-arrow-right me-2"></i>Sign Out
+                                        </button>
                                     </form>
                                 </li>
                             </ul>
                         </li>
                     {% else %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'login' %}"><i class="bi bi-box-arrow-in-right me-1"></i>Login</a>
+                        <li class="nav-item ms-lg-2">
+                            <a class="btn btn-outline-primary btn-sm" href="{% url 'login' %}">
+                                <i class="bi bi-box-arrow-in-right me-1"></i>Sign In
+                            </a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link btn btn-light text-primary ms-2 px-3" href="{% url 'register' %}"><i class="bi bi-person-plus me-1"></i>Register</a>
+                        <li class="nav-item ms-2">
+                            <a class="btn btn-primary btn-sm" href="{% url 'register' %}">
+                                <i class="bi bi-person-plus me-1"></i>Get Started
+                            </a>
                         </li>
                     {% endif %}
                 </ul>
@@ -171,22 +678,37 @@
         </div>
     </nav>
 
+    <!-- Messages -->
     {% if messages %}
         <div class="container mt-3">
             {% for message in messages %}
-                <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show shadow-sm" role="alert">
-                    <i class="bi bi-info-circle-fill me-2"></i>{{ message }}
+                <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show animate-fade-in" role="alert">
+                    <i class="bi bi-info-circle me-2"></i>{{ message }}
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
             {% endfor %}
         </div>
     {% endif %}
 
-    {% block content %}{% endblock %}
+    <!-- Main Content -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
 
-    <footer class="mt-5 py-4 text-center text-muted" style="background: white; border-top: 1px solid #e0e0e0;">
+    <!-- Footer -->
+    <footer class="mt-auto py-4" style="border-top: 1px solid var(--gray-200); background: white;">
         <div class="container">
-            <small>Regional Scholarship Application Portal &copy; 2026. Secure document handling powered by Cloudinary.</small>
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <p class="text-muted small mb-0">
+                        <i class="bi bi-mortarboard me-1"></i>
+                        Regional Scholarship Portal. Empowering futures through education.
+                    </p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <span class="text-muted small">Secure &middot; Transparent &middot; Accessible</span>
+                </div>
+            </div>
         </div>
     </footer>
 

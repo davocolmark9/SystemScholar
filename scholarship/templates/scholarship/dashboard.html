@@ -14,7 +14,183 @@
             <i class="bi bi-plus-circle me-2"></i>New Application
         </a>
     </div>
+{% extends 'base.html' %}
+{% load scholarship_extras %}
 
+{% block title %}My Dashboard - Regional Scholarship Portal{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+        <div>
+            <h2 class="h3 fw-bold mb-1">My Dashboard</h2>
+            <p class="text-muted mb-0">Welcome back, {{ user.get_full_name|default:user.username }}</p>
+        </div>
+        <a href="{% url 'apply_scholarship' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle me-2"></i>New Application
+        </a>
+    </div>
+
+    <!-- Stats Row -->
+    <div class="row g-3 mb-5">
+        <div class="col-6 col-md-3">
+            <div class="card stats-card border-primary">
+                <div class="stats-number">{{ applications.count }}</div>
+                <div class="text-muted small">Total Applications</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card stats-card border-warning">
+                <div class="stats-number text-warning">{{ in_progress_count|default:0 }}</div>
+                <div class="text-muted small">In Progress</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card stats-card border-success">
+                <div class="stats-number text-success">{{ approved_count|default:0 }}</div>
+                <div class="text-muted small">Approved</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card stats-card border-info" style="--info: #0891b2;">
+                <div class="stats-number text-info">{{ documents.count }}</div>
+                <div class="text-muted small">Documents</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Applications Section -->
+    <div class="mb-2">
+        <h4 class="fw-semibold mb-3">
+            <i class="bi bi-file-earmark-text me-2 text-primary"></i>My Applications
+        </h4>
+    </div>
+
+    {% if applications %}
+        <div class="row g-4 mb-5">
+            {% for app in applications %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 border-0 shadow-sm hover-lift">
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div class="badge {{ app.status|status_badge_class }} status-badge">
+                                    {{ app.get_status_display }}
+                                </div>
+                                <span class="text-muted small">{{ app.created_at|date:"M d, Y" }}</span>
+                            </div>
+
+                            <h5 class="card-title fw-semibold mb-2">{{ app.program.name }}</h5>
+                            <p class="text-muted small mb-3" style="line-height: 1.6;">{{ app.personal_statement|truncatewords:12 }}</p>
+
+                            <div class="d-flex align-items-center gap-3 text-muted small mb-3">
+                                <span><i class="bi bi-file-earmark me-1"></i>{{ app.documents.count }} doc{{ app.documents.count|pluralize }}</span>
+                                <span><i class="bi bi-currency-dollar me-1"></i>{{ app.program.amount|floatformat:0 }}</span>
+                            </div>
+
+                            <!-- Progress Bar -->
+                            <div class="progress mb-3" style="height: 4px;">
+                                {% if app.status == 'draft' %}
+                                    <div class="progress-bar bg-secondary" style="width: 25%"></div>
+                                {% elif app.status == 'submitted' %}
+                                    <div class="progress-bar bg-info" style="width: 50%"></div>
+                                {% elif app.status == 'under_review' %}
+                                    <div class="progress-bar bg-warning" style="width: 75%"></div>
+                                {% elif app.status == 'approved' %}
+                                    <div class="progress-bar bg-success" style="width: 100%"></div>
+                                {% elif app.status == 'rejected' %}
+                                    <div class="progress-bar bg-danger" style="width: 100%"></div>
+                                {% endif %}
+                            </div>
+                            <p class="text-muted small mb-0">{{ app.get_status_display }}</p>
+                        </div>
+                        <div class="card-footer bg-transparent border-0 p-4 pt-0">
+                            <a href="{% url 'application_detail' pk=app.pk %}" class="btn btn-outline-primary btn-sm w-100">
+                                <i class="bi bi-eye me-1"></i>View Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="card border-0 shadow-sm mb-5">
+            <div class="card-body empty-state py-5">
+                <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style="width: 64px; height: 64px; background: var(--gray-100);">
+                    <i class="bi bi-inbox display-6" style="color: var(--gray-400);"></i>
+                </div>
+                <h5 class="fw-semibold">No Applications Yet</h5>
+                <p class="text-muted mb-3">Start your scholarship journey by creating your first application.</p>
+                <a href="{% url 'apply_scholarship' %}" class="btn btn-primary">
+                    <i class="bi bi-plus-circle me-2"></i>Apply Now
+                </a>
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Documents Section -->
+    <div class="mb-2">
+        <h4 class="fw-semibold mb-3">
+            <i class="bi bi-files me-2 text-primary"></i>Recent Documents
+        </h4>
+    </div>
+
+    {% if documents %}
+        <div class="card border-0 shadow-sm">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Document</th>
+                            <th>Application</th>
+                            <th>Status</th>
+                            <th>Uploaded</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for doc in documents|slice:":5" %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="d-flex align-items-center justify-content-center rounded me-3" style="width: 36px; height: 36px; background: var(--primary-light);">
+                                            <i class="bi bi-file-earmark-text text-primary"></i>
+                                        </div>
+                                        <span class="fw-medium">{{ doc.get_document_type_display }}</span>
+                                    </div>
+                                </td>
+                                <td><code class="small text-muted">{{ doc.application.id|truncatechars:8 }}</code></td>
+                                <td>
+                                    <span class="badge {{ doc.verification_status|doc_status_badge_class }}">
+                                        {{ doc.get_verification_status_display }}
+                                    </span>
+                                </td>
+                                <td class="text-muted small">{{ doc.uploaded_at|date:"M d, Y" }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% else %}
+        <div class="card border-0 shadow-sm">
+            <div class="card-body empty-state py-4">
+                <i class="bi bi-cloud-upload"></i>
+                <p class="text-muted mb-0 mt-2">No documents uploaded yet. Documents will appear here once you upload them.</p>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+<style>
+.hover-lift {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg) !important;
+}
+</style>
+{% endblock %}
     <div class="row mb-4">
         <div class="col-md-3 mb-3">
             <div class="card stats-card">

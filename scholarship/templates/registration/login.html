@@ -1,38 +1,66 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Login - Regional Scholarship Portal{% endblock %}
+{% block title %}Sign In - Regional Scholarship Portal{% endblock %}
 
 {% block content %}
 <div class="container py-5">
     <div class="row justify-content-center">
-        <div class="col-md-6 col-lg-5">
-            <div class="card shadow">
+        <div class="col-md-5 col-lg-4">
+            <div class="text-center mb-4">
+                <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style="width: 72px; height: 72px; background: var(--primary-light);">
+                    <i class="bi bi-shield-lock display-5" style="color: var(--primary);"></i>
+                </div>
+                <h2 class="h3 fw-bold mb-1">Welcome Back</h2>
+                <p class="text-muted">Sign in to manage your applications</p>
+            </div>
+
+            <div class="card shadow-sm border-0">
                 <div class="card-body p-4">
-                    <div class="text-center mb-4">
-                        <i class="bi bi-shield-lock display-4 text-primary"></i>
-                        <h4 class="mt-2">Welcome Back</h4>
-                        <p class="text-muted small">Sign in to manage your applications</p>
-                    </div>
                     <form method="post" novalidate>
                         {% csrf_token %}
+
                         {% for field in form %}
                             <div class="mb-3">
                                 <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
-                                {{ field }}
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white border-end-0" style="color: var(--gray-400);">
+                                        {% if field.name == 'username' %}
+                                            <i class="bi bi-person"></i>
+                                        {% else %}
+                                            <i class="bi bi-key"></i>
+                                        {% endif %}
+                                    </span>
+                                    {{ field }}
+                                </div>
                                 {% if field.errors %}
-                                    <div class="invalid-feedback d-block">{{ field.errors.0 }}</div>
+                                    <div class="invalid-feedback d-block">
+                                        <i class="bi bi-exclamation-circle me-1"></i>{{ field.errors.0 }}
+                                    </div>
                                 {% endif %}
                             </div>
                         {% endfor %}
-                        <button type="submit" class="btn btn-primary w-100 mb-3">
+
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="remember">
+                                <label class="form-check-label small text-muted" for="remember">Remember me</label>
+                            </div>
+                            <a href="#" class="small text-decoration-none" style="color: var(--primary);">Forgot password?</a>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 py-2">
                             <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
                         </button>
-                        <p class="text-center text-muted small mb-0">
-                            Don't have an account? <a href="{% url 'register' %}" class="text-decoration-none">Register</a>
-                        </p>
                     </form>
                 </div>
+            </div>
+
+            <div class="text-center mt-4">
+                <p class="text-muted small mb-0">
+                    Don't have an account? 
+                    <a href="{% url 'register' %}" class="text-decoration-none fw-medium" style="color: var(--primary);">Create one now</a>
+                </p>
             </div>
         </div>
     </div>

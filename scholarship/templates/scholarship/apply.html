@@ -7,33 +7,53 @@
 <div class="container py-4">
     <div class="row justify-content-center">
         <div class="col-lg-8">
-            <div class="card shadow">
+            <!-- Progress Steps -->
+            <div class="d-flex justify-content-center mb-4">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 32px; height: 32px; background: var(--primary); color: white; font-weight: 600; font-size: 0.875rem;">1</div>
+                    <span class="fw-medium small" style="color: var(--primary);">Application</span>
+                    <div style="width: 40px; height: 2px; background: var(--gray-300);"></div>
+                    <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 32px; height: 32px; background: var(--gray-200); color: var(--gray-500); font-weight: 600; font-size: 0.875rem;">2</div>
+                    <span class="fw-medium small text-muted">Documents</span>
+                    <div style="width: 40px; height: 2px; background: var(--gray-300);"></div>
+                    <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 32px; height: 32px; background: var(--gray-200); color: var(--gray-500); font-weight: 600; font-size: 0.875rem;">3</div>
+                    <span class="fw-medium small text-muted">Review</span>
+                </div>
+            </div>
+
+            <div class="card shadow-sm border-0">
                 <div class="card-header bg-white py-3">
-                    <h4 class="mb-0"><i class="bi bi-file-earmark-plus me-2 text-primary"></i>New Scholarship Application</h4>
+                    <h4 class="mb-0 fw-semibold"><i class="bi bi-file-earmark-plus me-2 text-primary"></i>New Scholarship Application</h4>
                     <p class="text-muted small mb-0">Fill in your application details below</p>
                 </div>
                 <div class="card-body p-4">
                     <form method="post" novalidate>
                         {% csrf_token %}
+
                         {% for field in form %}
-                            <div class="mb-3">
+                            <div class="mb-4">
                                 <label for="{{ field.id_for_label }}" class="form-label">
                                     {{ field.label }}
                                     {% if field.field.required %}<span class="text-danger">*</span>{% endif %}
                                 </label>
                                 {{ field }}
                                 {% if field.help_text %}
-                                    <div class="form-text small">{{ field.help_text }}</div>
+                                    <div class="form-text">{{ field.help_text }}</div>
                                 {% endif %}
                                 {% if field.errors %}
-                                    <div class="invalid-feedback d-block">{{ field.errors.0 }}</div>
+                                    <div class="invalid-feedback d-block">
+                                        <i class="bi bi-exclamation-circle me-1"></i>{{ field.errors.0 }}
+                                    </div>
                                 {% endif %}
                             </div>
                         {% endfor %}
-                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                            <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">Cancel</a>
+
+                        <div class="d-flex flex-wrap gap-2 justify-content-end pt-3 border-top">
+                            <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-circle me-2"></i>Cancel
+                            </a>
                             <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-arrow-right-circle me-2"></i>Continue to Documents
+                                Continue to Documents<i class="bi bi-arrow-right ms-2"></i>
                             </button>
                         </div>
                     </form>

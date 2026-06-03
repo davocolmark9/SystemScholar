@@ -4,84 +4,215 @@
 {% block title %}Home - Regional Scholarship Portal{% endblock %}
 
 {% block content %}
+<!-- Hero Section -->
 <div class="hero-section">
-    <div class="container text-center">
-        <h1 class="display-4 fw-bold mb-3">Empowering Futures Through Education</h1>
-        <p class="lead mb-4 opacity-75">Apply for regional scholarships, upload KYC documents securely, and track your application status in real-time.</p>
-        {% if not user.is_authenticated %}
-            <a href="{% url 'register' %}" class="btn btn-light btn-lg me-2 px-4">Get Started</a>
-            <a href="{% url 'login' %}" class="btn btn-outline-light btn-lg px-4">Sign In</a>
+    <div class="container text-center position-relative">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <span class="badge bg-white text-primary mb-3 px-3 py-2" style="font-size: 0.875rem;">
+                    <i class="bi bi-stars me-1"></i>2026 Scholarship Cycle Now Open
+                </span>
+                <h1 class="display-3 fw-bold mb-4">Empowering Futures<br>Through Education</h1>
+                <p class="lead mb-5 opacity-90" style="font-size: 1.25rem; font-weight: 300;">
+                    Apply for regional scholarships, upload documents securely, and track your application journey in real-time.
+                </p>
+                <div class="d-flex flex-wrap justify-content-center gap-3">
+                    {% if not user.is_authenticated %}
+                        <a href="{% url 'register' %}" class="btn btn-light btn-lg px-5 py-3 fw-semibold" style="border-radius: var(--radius-xl);">
+                            <i class="bi bi-person-plus me-2"></i>Get Started
+                        </a>
+                        <a href="{% url 'login' %}" class="btn btn-outline-light btn-lg px-5 py-3 fw-semibold" style="border-radius: var(--radius-xl);">
+                            <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
+                        </a>
+                    {% else %}
+                        <a href="{% url 'dashboard' %}" class="btn btn-light btn-lg px-5 py-3 fw-semibold" style="border-radius: var(--radius-xl);">
+                            <i class="bi bi-grid me-2"></i>Go to Dashboard
+                        </a>
+                        <a href="{% url 'apply_scholarship' %}" class="btn btn-outline-light btn-lg px-5 py-3 fw-semibold" style="border-radius: var(--radius-xl);">
+                            <i class="bi bi-file-earmark-plus me-2"></i>Apply Now
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Bar -->
+        <div class="row mt-5 pt-4 justify-content-center">
+            <div class="col-md-3 col-6">
+                <div class="text-center">
+                    <div class="h3 fw-bold mb-1">500+</div>
+                    <div class="small opacity-75">Scholarships Awarded</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="text-center">
+                    <div class="h3 fw-bold mb-1">$2M+</div>
+                    <div class="small opacity-75">Total Funding</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="text-center">
+                    <div class="h3 fw-bold mb-1">50+</div>
+                    <div class="small opacity-75">Partner Institutions</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="text-center">
+                    <div class="h3 fw-bold mb-1">98%</div>
+                    <div class="small opacity-75">Satisfaction Rate</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h2 class="h3 fw-bold mb-2">Why Choose Our Portal?</h2>
+        <p class="text-muted">A seamless experience from application to approval</p>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card h-100 text-center p-4 border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="mb-4">
+                        <div class="d-inline-flex align-items-center justify-content-center rounded-circle" style="width: 64px; height: 64px; background: var(--primary-light);">
+                            <i class="bi bi-shield-check display-6" style="color: var(--primary);"></i>
+                        </div>
+                    </div>
+                    <h5 class="card-title fw-semibold mb-2">Secure & Private</h5>
+                    <p class="card-text text-muted small">End-to-end encrypted document uploads with Cloudinary. Your data is protected with UUID-based identifiers.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 text-center p-4 border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="mb-4">
+                        <div class="d-inline-flex align-items-center justify-content-center rounded-circle" style="width: 64px; height: 64px; background: var(--success-light);">
+                            <i class="bi bi-lightning-charge display-6" style="color: var(--success);"></i>
+                        </div>
+                    </div>
+                    <h5 class="card-title fw-semibold mb-2">Fast Processing</h5>
+                    <p class="card-text text-muted small">Real-time status updates and automated notifications. Track every step of your application journey.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 text-center p-4 border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="mb-4">
+                        <div class="d-inline-flex align-items-center justify-content-center rounded-circle" style="width: 64px; height: 64px; background: var(--warning-light);">
+                            <i class="bi bi-graph-up-arrow display-6" style="color: var(--warning);"></i>
+                        </div>
+                    </div>
+                    <h5 class="card-title fw-semibold mb-2">Transparent Review</h5>
+                    <p class="card-text text-muted small">Complete audit trail for every action. Know exactly where your application stands at all times.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scholarship Programs -->
+<div class="py-5" style="background: white;">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-end mb-4">
+            <div>
+                <h2 class="h3 fw-bold mb-1">Available Programs</h2>
+                <p class="text-muted mb-0">Explore opportunities tailored for you</p>
+            </div>
+            {% if user.is_authenticated %}
+                <a href="{% url 'apply_scholarship' %}" class="btn btn-outline-primary btn-sm">
+                    View All <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            {% endif %}
+        </div>
+
+        {% if programs %}
+            <div class="row g-4">
+                {% for program in programs %}
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card h-100 border-0 shadow-sm overflow-hidden">
+                            <div class="card-body p-4">
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    <div class="badge bg-success-soft mb-2">
+                                        <i class="bi bi-circle-fill me-1" style="font-size: 6px;"></i>Open
+                                    </div>
+                                    <span class="fw-bold text-primary h5 mb-0">${{ program.amount|floatformat:0 }}</span>
+                                </div>
+                                <h5 class="card-title fw-semibold mb-2">{{ program.name }}</h5>
+                                <p class="card-text text-muted small mb-3" style="line-height: 1.6;">{{ program.description|truncatewords:20 }}</p>
+                                <div class="d-flex align-items-center text-muted small mb-3">
+                                    <i class="bi bi-calendar-event me-2"></i>
+                                    <span>Deadline: {{ program.deadline }}</span>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-transparent border-0 p-4 pt-0">
+                                {% if user.is_authenticated %}
+                                    <a href="{% url 'apply_scholarship' %}" class="btn btn-primary w-100">
+                                        <i class="bi bi-file-earmark-plus me-2"></i>Apply Now
+                                    </a>
+                                {% else %}
+                                    <a href="{% url 'register' %}" class="btn btn-outline-primary w-100">
+                                        <i class="bi bi-person-plus me-2"></i>Register to Apply
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
         {% else %}
-            <a href="{% url 'dashboard' %}" class="btn btn-light btn-lg px-4">Go to Dashboard</a>
+            <div class="card border-0 shadow-sm">
+                <div class="card-body empty-state py-5">
+                    <i class="bi bi-inbox"></i>
+                    <h5 class="mt-3">No Active Programs</h5>
+                    <p class="text-muted">There are no active scholarship programs at this time. Please check back later.</p>
+                </div>
+            </div>
         {% endif %}
     </div>
 </div>
 
-<div class="container">
-    <div class="row mb-5">
-        <div class="col-md-4 mb-4">
-            <div class="card h-100 text-center p-4">
-                <div class="card-body">
-                    <i class="bi bi-cloud-upload display-4 text-primary mb-3"></i>
-                    <h5 class="card-title">Secure Document Upload</h5>
-                    <p class="card-text text-muted">Upload KYC documents safely with Cloudinary integration. All files are encrypted and stored securely.</p>
+<!-- How It Works -->
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h2 class="h3 fw-bold mb-2">How It Works</h2>
+        <p class="text-muted">Three simple steps to your scholarship</p>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="text-center">
+                <div class="position-relative d-inline-block mb-3">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 80px; height: 80px; background: var(--primary-light); color: var(--primary); font-size: 1.5rem; font-weight: 700;">1</div>
+                    <div class="position-absolute top-50 start-100 translate-middle-y d-none d-md-block" style="width: 100%; height: 2px; background: var(--gray-200); left: 100%;"></div>
                 </div>
+                <h5 class="fw-semibold mb-2">Register & Complete Profile</h5>
+                <p class="text-muted small">Create your account and fill in your personal and educational details.</p>
             </div>
         </div>
-        <div class="col-md-4 mb-4">
-            <div class="card h-100 text-center p-4">
-                <div class="card-body">
-                    <i class="bi bi-shield-check display-4 text-success mb-3"></i>
-                    <h5 class="card-title">Anti-IDOR Protection</h5>
-                    <p class="card-text text-muted">Your data is protected. Students can only access their own applications with UUID-based identifiers.</p>
+        <div class="col-md-4">
+            <div class="text-center">
+                <div class="position-relative d-inline-block mb-3">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 80px; height: 80px; background: var(--primary-light); color: var(--primary); font-size: 1.5rem; font-weight: 700;">2</div>
                 </div>
+                <h5 class="fw-semibold mb-2">Apply & Upload Documents</h5>
+                <p class="text-muted small">Choose a program, write your statement, and upload KYC documents securely.</p>
             </div>
         </div>
-        <div class="col-md-4 mb-4">
-            <div class="card h-100 text-center p-4">
-                <div class="card-body">
-                    <i class="bi bi-graph-up display-4 text-warning mb-3"></i>
-                    <h5 class="card-title">Real-Time Tracking</h5>
-                    <p class="card-text text-muted">Track your application status from submission to approval with full audit trail transparency.</p>
+        <div class="col-md-4">
+            <div class="text-center">
+                <div class="position-relative d-inline-block mb-3">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 80px; height: 80px; background: var(--primary-light); color: var(--primary); font-size: 1.5rem; font-weight: 700;">3</div>
                 </div>
+                <h5 class="fw-semibold mb-2">Track & Get Approved</h5>
+                <p class="text-muted small">Monitor your application status in real-time and receive notifications.</p>
             </div>
         </div>
     </div>
-
-    <h3 class="mb-4"><i class="bi bi-award me-2"></i>Available Scholarship Programs</h3>
-    {% if programs %}
-        <div class="row">
-            {% for program in programs %}
-                <div class="col-md-6 col-lg-4 mb-4">
-                    <div class="card h-100">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-start mb-2">
-                                <h5 class="card-title">{{ program.name }}</h5>
-                                <span class="badge bg-success">Open</span>
-                            </div>
-                            <p class="card-text text-muted small">{{ program.description|truncatewords:20 }}</p>
-                            <div class="d-flex justify-content-between align-items-center mt-3">
-                                <span class="fw-bold text-primary">${{ program.amount|floatformat:0 }}</span>
-                                <span class="text-muted small"><i class="bi bi-calendar-event me-1"></i>Deadline: {{ program.deadline }}</span>
-                            </div>
-                        </div>
-                        <div class="card-footer bg-transparent border-0 pb-3">
-                            {% if user.is_authenticated %}
-                                <a href="{% url 'apply_scholarship' %}" class="btn btn-primary w-100">Apply Now</a>
-                            {% else %}
-                                <a href="{% url 'register' %}" class="btn btn-outline-primary w-100">Register to Apply</a>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-            {% endfor %}
-        </div>
-    {% else %}
-        <div class="empty-state">
-            <i class="bi bi-inbox"></i>
-            <h5>No Active Programs</h5>
-            <p>There are no active scholarship programs at this time. Please check back later.</p>
-        </div>
-    {% endif %}
 </div>
 {% endblock %}

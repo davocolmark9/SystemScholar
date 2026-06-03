@@ -7,75 +7,103 @@
 <div class="container py-4">
     <div class="row justify-content-center">
         <div class="col-lg-8">
-            <div class="card shadow">
+            <!-- Progress Steps -->
+            <div class="d-flex justify-content-center mb-4">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 32px; height: 32px; background: var(--primary); color: white; font-weight: 600; font-size: 0.875rem;">1</div>
+                    <span class="fw-medium small" style="color: var(--primary);">Profile</span>
+                    <div style="width: 40px; height: 2px; background: var(--gray-300);"></div>
+                    <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 32px; height: 32px; background: var(--gray-200); color: var(--gray-500); font-weight: 600; font-size: 0.875rem;">2</div>
+                    <span class="fw-medium small text-muted">Application</span>
+                    <div style="width: 40px; height: 2px; background: var(--gray-300);"></div>
+                    <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 32px; height: 32px; background: var(--gray-200); color: var(--gray-500); font-weight: 600; font-size: 0.875rem;">3</div>
+                    <span class="fw-medium small text-muted">Documents</span>
+                </div>
+            </div>
+
+            <div class="card shadow-sm border-0">
                 <div class="card-header bg-white py-3">
-                    <h4 class="mb-0"><i class="bi bi-person-gear me-2 text-primary"></i>Complete Your Profile</h4>
+                    <h4 class="mb-0 fw-semibold"><i class="bi bi-person-gear me-2 text-primary"></i>Complete Your Profile</h4>
                     <p class="text-muted small mb-0">Please provide your personal details and educational background</p>
                 </div>
                 <div class="card-body p-4">
                     <form method="post" novalidate>
                         {% csrf_token %}
 
-                        <h5 class="mb-3 text-primary"><i class="bi bi-person me-2"></i>Personal Information</h5>
-                        <div class="row">
-                            {% for field in profile_form %}
-                                <div class="col-md-6 mb-3">
-                                    <label for="{{ field.id_for_label }}" class="form-label">
-                                        {{ field.label }}
-                                        {% if field.field.required %}<span class="text-danger">*</span>{% endif %}
-                                    </label>
-                                    {{ field }}
-                                    {% if field.errors %}
-                                        <div class="invalid-feedback d-block">{{ field.errors.0 }}</div>
-                                    {% endif %}
-                                </div>
-                            {% endfor %}
+                        <!-- Personal Information -->
+                        <div class="mb-4">
+                            <div class="section-header border-0 pb-0">
+                                <i class="bi bi-person"></i>
+                                <h5>Personal Information</h5>
+                            </div>
+                            <div class="row g-3">
+                                {% for field in profile_form %}
+                                    <div class="col-md-6">
+                                        <label for="{{ field.id_for_label }}" class="form-label">
+                                            {{ field.label }}
+                                            {% if field.field.required %}<span class="text-danger">*</span>{% endif %}
+                                        </label>
+                                        {{ field }}
+                                        {% if field.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                <i class="bi bi-exclamation-circle me-1"></i>{{ field.errors.0 }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                {% endfor %}
+                            </div>
                         </div>
 
                         <hr class="my-4">
 
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h5 class="mb-0 text-primary"><i class="bi bi-mortarboard me-2"></i>Educational Background</h5>
-                            <span class="badge bg-info">Add up to 5 records</span>
-                        </div>
-                        <p class="text-muted small">Add your academic qualifications. Include your most recent education first.</p>
-
-                        {{ formset.management_form }}
-                        <div id="education-forms">
-                            {% for form in formset %}
-                                <div class="education-form border rounded p-3 mb-3 bg-light">
-                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <span class="fw-bold text-muted small">Education Record #{{ forloop.counter }}</span>
-                                        {% if formset.can_delete %}
-                                            <div class="form-check">
-                                                {{ form.DELETE }}
-                                                <label class="form-check-label text-danger small" for="{{ form.DELETE.id_for_label }}">
-                                                    <i class="bi bi-trash me-1"></i>Remove
-                                                </label>
-                                            </div>
-                                        {% endif %}
-                                    </div>
-                                    <div class="row">
-                                        {% for field in form.visible_fields %}
-                                            <div class="col-md-6 mb-2">
-                                                <label for="{{ field.id_for_label }}" class="form-label small">{{ field.label }}</label>
-                                                {{ field }}
-                                                {% if field.errors %}
-                                                    <div class="invalid-feedback d-block small">{{ field.errors.0 }}</div>
-                                                {% endif %}
-                                            </div>
-                                        {% endfor %}
-                                    </div>
-                                    {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
+                        <!-- Educational Background -->
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div class="section-header border-0 pb-0 mb-0">
+                                    <i class="bi bi-mortarboard"></i>
+                                    <h5>Educational Background</h5>
                                 </div>
-                            {% endfor %}
+                                <span class="badge bg-info-soft">Add up to 5 records</span>
+                            </div>
+                            <p class="text-muted small mb-3">Add your academic qualifications. Include your most recent education first.</p>
+
+                            {{ formset.management_form }}
+                            <div id="education-forms">
+                                {% for form in formset %}
+                                    <div class="education-form border rounded p-3 mb-3 bg-light">
+                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                            <span class="fw-medium text-muted small">Education Record #{{ forloop.counter }}</span>
+                                            {% if formset.can_delete %}
+                                                <div class="form-check">
+                                                    {{ form.DELETE }}
+                                                    <label class="form-check-label text-danger small" for="{{ form.DELETE.id_for_label }}">
+                                                        <i class="bi bi-trash me-1"></i>Remove
+                                                    </label>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                        <div class="row g-2">
+                                            {% for field in form.visible_fields %}
+                                                <div class="col-md-6">
+                                                    <label for="{{ field.id_for_label }}" class="form-label small">{{ field.label }}</label>
+                                                    {{ field }}
+                                                    {% if field.errors %}
+                                                        <div class="invalid-feedback d-block small">{{ field.errors.0 }}</div>
+                                                    {% endif %}
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                        {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
+                                    </div>
+                                {% endfor %}
+                            </div>
                         </div>
 
                         {% if formset.non_form_errors %}
                             <div class="alert alert-danger">{{ formset.non_form_errors }}</div>
                         {% endif %}
 
-                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                        <div class="d-flex justify-content-end pt-3 border-top">
                             <button type="submit" class="btn btn-primary">
                                 <i class="bi bi-check-circle me-2"></i>Save Profile
                             </button>

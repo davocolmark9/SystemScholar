@@ -1,19 +1,22 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Register - Regional Scholarship Portal{% endblock %}
+{% block title %}Create Account - Regional Scholarship Portal{% endblock %}
 
 {% block content %}
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-md-6 col-lg-5">
-            <div class="card shadow">
+            <div class="text-center mb-4">
+                <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style="width: 72px; height: 72px; background: var(--success-light);">
+                    <i class="bi bi-person-plus display-5" style="color: var(--success);"></i>
+                </div>
+                <h2 class="h3 fw-bold mb-1">Create Account</h2>
+                <p class="text-muted">Join thousands of students pursuing their dreams</p>
+            </div>
+
+            <div class="card shadow-sm border-0">
                 <div class="card-body p-4">
-                    <div class="text-center mb-4">
-                        <i class="bi bi-person-plus display-4 text-primary"></i>
-                        <h4 class="mt-2">Create Account</h4>
-                        <p class="text-muted small">Register to apply for regional scholarships</p>
-                    </div>
                     <form method="post" novalidate>
                         {% csrf_token %}
 
@@ -30,25 +33,51 @@
                                         {{ field.label }}
                                         {% if field.field.required %}<span class="text-danger">*</span>{% endif %}
                                     </label>
-                                    {{ field }}
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-white border-end-0" style="color: var(--gray-400);">
+                                            {% if 'user' in field.name or 'name' in field.name %}
+                                                <i class="bi bi-person"></i>
+                                            {% elif 'mail' in field.name %}
+                                                <i class="bi bi-envelope"></i>
+                                            {% elif 'pass' in field.name %}
+                                                <i class="bi bi-key"></i>
+                                            {% else %}
+                                                <i class="bi bi-info-circle"></i>
+                                            {% endif %}
+                                        </span>
+                                        {{ field }}
+                                    </div>
                                     {% if field.help_text %}
-                                        <div class="form-text small">{{ field.help_text }}</div>
+                                        <div class="form-text">{{ field.help_text }}</div>
                                     {% endif %}
                                     {% if field.errors %}
-                                        <div class="invalid-feedback d-block">{{ field.errors.0 }}</div>
+                                        <div class="invalid-feedback d-block">
+                                            <i class="bi bi-exclamation-circle me-1"></i>{{ field.errors.0 }}
+                                        </div>
                                     {% endif %}
                                 </div>
                             {% endif %}
                         {% endfor %}
 
-                        <button type="submit" class="btn btn-primary w-100 mb-3">
+                        <div class="form-check mb-4">
+                            <input class="form-check-input" type="checkbox" id="terms" required>
+                            <label class="form-check-label small text-muted" for="terms">
+                                I agree to the <a href="#" class="text-decoration-none">Terms of Service</a> and <a href="#" class="text-decoration-none">Privacy Policy</a>
+                            </label>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 py-2">
                             <i class="bi bi-person-check me-2"></i>Create Account
                         </button>
-                        <p class="text-center text-muted small mb-0">
-                            Already have an account? <a href="{% url 'login' %}" class="text-decoration-none">Sign in</a>
-                        </p>
                     </form>
                 </div>
+            </div>
+
+            <div class="text-center mt-4">
+                <p class="text-muted small mb-0">
+                    Already have an account? 
+                    <a href="{% url 'login' %}" class="text-decoration-none fw-medium" style="color: var(--primary);">Sign in</a>
+                </p>
             </div>
         </div>
     </div>
