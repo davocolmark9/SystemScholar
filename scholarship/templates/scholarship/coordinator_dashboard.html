@@ -220,7 +220,6 @@
 
 {% block extra_js %}
 <script>
-    // Bulk selection logic
     document.getElementById('select-all').addEventListener('change', function() {
         document.querySelectorAll('.app-checkbox').forEach(cb => cb.checked = this.checked);
         updateSelectedIds();
