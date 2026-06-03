@@ -4,7 +4,6 @@ register = template.Library()
 
 @register.filter
 def status_badge_class(status):
-    """Return Bootstrap badge class for application status."""
     classes = {
         'draft': 'bg-secondary-soft',
         'submitted': 'bg-info-soft',
@@ -17,7 +16,6 @@ def status_badge_class(status):
 
 @register.filter
 def doc_status_badge_class(status):
-    """Return Bootstrap badge class for document verification status."""
     classes = {
         'pending': 'bg-warning-soft',
         'verified': 'bg-success-soft',
