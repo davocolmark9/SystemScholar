@@ -4,32 +4,23 @@ register = template.Library()
 
 @register.filter
 def status_badge_class(status):
-    """Returns Bootstrap badge class for application status."""
+    """Return Bootstrap badge class for application status."""
     classes = {
-        'draft': 'bg-secondary',
-        'submitted': 'bg-info',
-        'under_review': 'bg-warning text-dark',
-        'documents_pending': 'bg-warning',
-        'approved': 'bg-success',
-        'rejected': 'bg-danger',
-        'disbursed': 'bg-primary',
+        'draft': 'bg-secondary-soft',
+        'submitted': 'bg-info-soft',
+        'under_review': 'bg-warning-soft',
+        'approved': 'bg-success-soft',
+        'rejected': 'bg-danger-soft',
+        'pending': 'bg-warning-soft',
     }
-    return classes.get(status, 'bg-secondary')
+    return classes.get(status, 'bg-secondary-soft')
 
 @register.filter
 def doc_status_badge_class(status):
-    """Returns Bootstrap badge class for document verification status."""
+    """Return Bootstrap badge class for document verification status."""
     classes = {
-        'pending': 'bg-warning text-dark',
-        'verified': 'bg-success',
-        'rejected': 'bg-danger',
+        'pending': 'bg-warning-soft',
+        'verified': 'bg-success-soft',
+        'rejected': 'bg-danger-soft',
     }
-    return classes.get(status, 'bg-secondary')
-
-@register.filter
-def percentage(value, total):
-    """Calculate percentage."""
-    try:
-        return round((value / total) * 100, 1) if total > 0 else 0
-    except (TypeError, ZeroDivisionError):
-        return 0
+    return classes.get(status, 'bg-secondary-soft')

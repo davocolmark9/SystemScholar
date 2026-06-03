@@ -187,3 +187,29 @@ class DocumentVerificationForm(forms.ModelForm):
             'verification_status': forms.Select(attrs={'class': 'form-select'}),
             'verification_notes': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
         }
+
+
+class BootstrapFormMixin:
+    """Mixin to add Bootstrap classes to form fields."""
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            if isinstance(field.widget, (forms.TextInput, forms.EmailInput, 
+                                         forms.PasswordInput, forms.NumberInput,
+                                         forms.DateInput, forms.Select)):
+                field.widget.attrs.update({
+                    'class': 'form-control'
+                })
+            elif isinstance(field.widget, forms.Textarea):
+                field.widget.attrs.update({
+                    'class': 'form-control',
+                    'rows': 4
+                })
+            elif isinstance(field.widget, forms.CheckboxInput):
+                field.widget.attrs.update({
+                    'class': 'form-check-input'
+                })
+            elif isinstance(field.widget, forms.FileInput):
+                field.widget.attrs.update({
+                    'class': 'form-control'
+                })
