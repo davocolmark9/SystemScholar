@@ -1,0 +1,261 @@
+{
+  "info": {
+    "_postman_id": "scholarship-portal-2026",
+    "name": "Regional Scholarship Portal API",
+    "description": "API collection for the Regional Scholarship Application Portal. Includes JWT authentication, applicant verification, and public endpoints.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Get JWT Token (Login)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"username\": \"institution_user\", \"password\": \"password123\"}"
+            },
+            "url": {
+              "raw": "https://systemscholar.onrender.com/api/token/",
+              "protocol": "https",
+              "host": [
+                "systemscholar",
+                "onrender",
+                "com"
+              ],
+              "path": [
+                "api",
+                "token",
+                ""
+              ]
+            },
+            "description": "Obtain JWT access and refresh tokens for API authentication."
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": ""
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"access\": \"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...\",\n  \"refresh\": \"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"refresh\": \"<refresh_token_here>\"}"
+            },
+            "url": {
+              "raw": "https://systemscholar.onrender.com/api/token/refresh/",
+              "protocol": "https",
+              "host": [
+                "systemscholar",
+                "onrender",
+                "com"
+              ],
+              "path": [
+                "api",
+                "token",
+                "refresh",
+                ""
+              ]
+            },
+            "description": "Refresh an expired access token using the refresh token."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Applicant Verification (Authenticated)",
+      "item": [
+        {
+          "name": "Verify Applicant Status",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "description": "JWT Bearer token obtained from /api/token/"
+              }
+            ],
+            "url": {
+              "raw": "https://systemscholar.onrender.com/api/verify/550e8400-e29b-41d4-a716-446655440000/",
+              "protocol": "https",
+              "host": [
+                "systemscholar",
+                "onrender",
+                "com"
+              ],
+              "path": [
+                "api",
+                "verify",
+                "550e8400-e29b-41d4-a716-446655440000",
+                ""
+              ]
+            },
+            "description": "Verify an applicant's scholarship status using their application UUID. Requires JWT authentication."
+          },
+          "response": [
+            {
+              "name": "Authenticated Success",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"550e8400-e29b-41d4-a716-446655440000\",\n    \"program\": {\n      \"id\": 1,\n      \"name\": \"STEM Excellence Scholarship\",\n      \"description\": \"Full scholarship for STEM students\",\n      \"amount\": \"5000.00\",\n      \"deadline\": \"2026-08-01\",\n      \"is_active\": true\n    },\n    \"applicant\": {\n      \"full_name\": \"Jane Doe\",\n      \"email\": \"jane@example.com\",\n      \"phone\": \"+1234567890\",\n      \"city\": \"Tacloban\",\n      \"region\": \"Eastern Visayas\",\n      \"country\": \"Philippines\"\n    },\n    \"status\": \"approved\",\n    \"status_display\": \"Approved\",\n    \"submitted_at\": \"2026-06-01T10:00:00Z\",\n    \"reviewed_at\": \"2026-06-03T14:30:00Z\",\n    \"documents\": [\n      {\n        \"id\": 1,\n        \"document_type\": \"national_id\",\n        \"document_type_display\": \"National ID / Passport\",\n        \"verification_status\": \"verified\",\n        \"verification_status_display\": \"Verified\",\n        \"uploaded_at\": \"2026-06-01T10:05:00Z\"\n      }\n    ],\n    \"created_at\": \"2026-06-01T10:00:00Z\"\n  }\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Public Endpoints (Unauthenticated)",
+      "item": [
+        {
+          "name": "Public Verify (Restricted Data)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://systemscholar.onrender.com/api/verify-public/550e8400-e29b-41d4-a716-446655440000/",
+              "protocol": "https",
+              "host": [
+                "systemscholar",
+                "onrender",
+                "com"
+              ],
+              "path": [
+                "api",
+                "verify-public",
+                "550e8400-e29b-41d4-a716-446655440000",
+                ""
+              ]
+            },
+            "description": "Public endpoint that returns 'Restricted Data' for unauthenticated requests. Demonstrates the security boundary."
+          },
+          "response": [
+            {
+              "name": "Unauthenticated Response",
+              "status": "Unauthorized",
+              "code": 401,
+              "body": "{\n  \"success\": false,\n  \"message\": \"Restricted Data\",\n  \"detail\": \"Authentication required. Please provide a valid JWT Bearer token in the Authorization header.\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Error Cases",
+      "item": [
+        {
+          "name": "Invalid Token",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer invalid_token_12345"
+              }
+            ],
+            "url": {
+              "raw": "https://systemscholar.onrender.com/api/verify/550e8400-e29b-41d4-a716-446655440000/",
+              "protocol": "https",
+              "host": [
+                "systemscholar",
+                "onrender",
+                "com"
+              ],
+              "path": [
+                "api",
+                "verify",
+                "550e8400-e29b-41d4-a716-446655440000",
+                ""
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Invalid Token Response",
+              "status": "Unauthorized",
+              "code": 401,
+              "body": "{\n  \"detail\": \"Given token not valid for any token type\",\n  \"code\": \"token_not_valid\",\n  \"messages\": [\n    {\n      \"token_class\": \"AccessToken\",\n      \"token_type\": \"access\",\n      \"message\": \"Token is invalid or expired\"\n    }\n  ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "Missing Application UUID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "https://systemscholar.onrender.com/api/verify/00000000-0000-0000-0000-000000000000/",
+              "protocol": "https",
+              "host": [
+                "systemscholar",
+                "onrender",
+                "com"
+              ],
+              "path": [
+                "api",
+                "verify",
+                "00000000-0000-0000-0000-000000000000",
+                ""
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Not Found",
+              "status": "Not Found",
+              "code": 404,
+              "body": "{\n  \"detail\": \"No ScholarshipApplication matches the given query.\"\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "access_token",
+      "value": "",
+      "type": "string",
+      "description": "JWT access token - populate via 'Get JWT Token' request"
+    },
+    {
+      "key": "refresh_token",
+      "value": "",
+      "type": "string",
+      "description": "JWT refresh token - populate via 'Get JWT Token' request"
+    }
+  ]
+}
