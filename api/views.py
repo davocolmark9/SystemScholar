@@ -12,28 +12,12 @@ from .permissions import IsExternalInstitution
 @api_view(['GET'])
 @permission_classes([IsExternalInstitution])
 def verify_applicant_status(request, application_id):
-    """
-    JWT-secured API endpoint for external academic institutions to verify
-    the status of an applicant.
-
-    Returns full data for authenticated JWT requests.
-    Returns "Restricted Data" for unauthenticated requests.
-
-    URL: /api/verify/<uuid:application_id>/
-    Headers: Authorization: Bearer <jwt_access_token>
-    """
-    try:
-        application = get_object_or_404(ScholarshipApplication, pk=application_id)
-        serializer = ScholarshipApplicationSerializer(application)
-        return Response({
-            'success': True,
-            'data': serializer.data
-        }, status=status.HTTP_200_OK)
-    except Exception as e:
-        return Response({
-            'success': False,
-            'error': str(e)
-        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    application = get_object_or_404(ScholarshipApplication, pk=application_id)
+    serializer = ScholarshipApplicationSerializer(application)
+    return Response({
+        'success': True,
+        'data': serializer.data
+    })
 
 
 @api_view(['GET'])
