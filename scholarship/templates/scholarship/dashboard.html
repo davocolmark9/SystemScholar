@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load scholarship_extras %}
 
-{% block title %}My Dashboard - Regional Scholarship Portal{% endblock %}
+{% block title %}My Dashboard - Philippine Scholarship Portal{% endblock %}
 
 {% block content %}
 <div class="container py-4">
@@ -69,7 +69,7 @@
 
                             <div class="d-flex align-items-center gap-3 text-muted small mb-3">
                                 <span><i class="bi bi-file-earmark me-1"></i>{{ app.documents.count }} doc{{ app.documents.count|pluralize }}</span>
-                                <span><i class="bi bi-currency-dollar me-1"></i>{{ app.program.amount|floatformat:0 }}</span>
+                                <span><i class="bi bi-currency-dollar me-1"></i>₱{{ app.program.amount|floatformat:0 }}</span>
                             </div>
 
                             <!-- Progress Bar -->

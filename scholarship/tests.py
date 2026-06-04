@@ -18,9 +18,13 @@ class AntiIDORTests(TestCase):
         self.bob = User.objects.create_user('bob', 'bob@test.com', 'pass123')
         self.coordinator = User.objects.create_user('coordinator', 'coord@test.com', 'pass123', is_staff=True)
 
-        # Create profiles
-        self.alice_profile = ApplicantProfile.objects.create(user=self.alice)
-        self.bob_profile = ApplicantProfile.objects.create(user=self.bob)
+        # Create profiles with Philippine regions
+        self.alice_profile = ApplicantProfile.objects.create(
+            user=self.alice, region='VII', city='Cebu City', phone='09171234567'
+        )
+        self.bob_profile = ApplicantProfile.objects.create(
+            user=self.bob, region='XI', city='Davao City', phone='09171234568'
+        )
 
         # Create a program
         self.program = ScholarshipProgram.objects.create(
@@ -124,7 +128,9 @@ class BulkActionTests(TestCase):
     def setUp(self):
         self.coordinator = User.objects.create_user('coord', 'coord@test.com', 'pass123', is_staff=True)
         self.applicant = User.objects.create_user('applicant', 'app@test.com', 'pass123')
-        self.profile = ApplicantProfile.objects.create(user=self.applicant)
+        self.profile = ApplicantProfile.objects.create(
+            user=self.applicant, region='NCR', city='Quezon City', phone='09171234569'
+        )
         self.program = ScholarshipProgram.objects.create(
             name='Test', description='Test', amount=1000,
             deadline=timezone.now().date() + timedelta(days=30)
@@ -150,3 +156,62 @@ class BulkActionTests(TestCase):
         self.app2.refresh_from_db()
         self.assertEqual(self.app1.status, 'approved')
         self.assertEqual(self.app2.status, 'approved')
+
+
+class PhilippinesRegionTests(TestCase):
+    """Test Philippines-specific region functionality."""
+
+    def setUp(self):
+        self.user = User.objects.create_user('testuser', 'test@test.com', 'pass123')
+        self.profile = ApplicantProfile.objects.create(
+            user=self.user, region='VII', city='Cebu City', phone='09171234567'
+        )
+        self.nationwide_program = ScholarshipProgram.objects.create(
+            name='Nationwide Scholarship',
+            description='Available to all regions',
+            amount=5000.00,
+            deadline=timezone.now().date() + timedelta(days=30),
+        )
+        self.regional_program = ScholarshipProgram.objects.create(
+            name='Visayas Scholarship',
+            description='Only for Visayas',
+            amount=3000.00,
+            deadline=timezone.now().date() + timedelta(days=30),
+            eligible_regions='VI,VII,VIII',
+        )
+        self.luzon_program = ScholarshipProgram.objects.create(
+            name='Luzon Scholarship',
+            description='Only for Luzon',
+            amount=3000.00,
+            deadline=timezone.now().date() + timedelta(days=30),
+            eligible_regions='NCR,III,IV-A',
+        )
+
+    def test_nationwide_program_eligible(self):
+        """Nationwide program should be eligible for any region."""
+        self.assertTrue(self.nationwide_program.is_region_eligible('VII'))
+        self.assertTrue(self.nationwide_program.is_region_eligible('NCR'))
+
+    def test_regional_program_eligible(self):
+        """Regional program should be eligible for matching regions."""
+        self.assertTrue(self.regional_program.is_region_eligible('VII'))
+        self.assertTrue(self.regional_program.is_region_eligible('VI'))
+        self.assertFalse(self.regional_program.is_region_eligible('NCR'))
+
+    def test_philippine_phone_validation(self):
+        """Test Philippine phone number validation."""
+        from .models import validate_ph_phone
+        # Valid numbers
+        self.assertIsNone(validate_ph_phone('09171234567'))
+        self.assertIsNone(validate_ph_phone('+639171234567'))
+        self.assertIsNone(validate_ph_phone('9171234567'))
+        # Invalid numbers
+        from django.core.exceptions import ValidationError
+        with self.assertRaises(ValidationError):
+            validate_ph_phone('1234567890')
+        with self.assertRaises(ValidationError):
+            validate_ph_phone('0917123456')
+
+    def test_default_country_is_philippines(self):
+        """Country should default to Philippines."""
+        self.assertEqual(self.profile.country, 'Philippines')

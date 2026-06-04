@@ -6,16 +6,20 @@ from .models import (
 
 @admin.register(ScholarshipProgram)
 class ScholarshipProgramAdmin(admin.ModelAdmin):
-    list_display = ['name', 'amount', 'deadline', 'is_active', 'created_at']
+    list_display = ['name', 'amount', 'deadline', 'is_active', 'eligible_regions_display', 'created_at']
     list_filter = ['is_active', 'deadline']
     search_fields = ['name', 'description']
     date_hierarchy = 'deadline'
+
+    def eligible_regions_display(self, obj):
+        return obj.eligible_regions or 'Nationwide'
+    eligible_regions_display.short_description = 'Eligible Regions'
 
 @admin.register(ApplicantProfile)
 class ApplicantProfileAdmin(admin.ModelAdmin):
     list_display = ['user', 'phone', 'city', 'region', 'country', 'created_at']
     search_fields = ['user__username', 'user__first_name', 'user__last_name', 'national_id']
-    list_filter = ['country', 'region', 'gender']
+    list_filter = ['region', 'gender']
 
 @admin.register(EducationalBackground)
 class EducationalBackgroundAdmin(admin.ModelAdmin):

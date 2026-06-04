@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load scholarship_extras %}
 
-{% block title %}Review Application #{{ application.id }} - Regional Scholarship Portal{% endblock %}
+{% block title %}Review Application #{{ application.id }} - Philippine Scholarship Portal{% endblock %}
 
 {% block content %}
 <div class="container-fluid py-4">
@@ -59,7 +59,7 @@
                         </div>
                         <div class="col-md-12">
                             <span class="text-muted small d-block mb-1">Address</span>
-                            <span class="fw-medium">{{ application.applicant.address|default:"—" }}, {{ application.applicant.city|default:"" }}, {{ application.applicant.region|default:"" }}, {{ application.applicant.country|default:"" }}</span>
+                            <span class="fw-medium">{{ application.applicant.address|default:"—" }}, {{ application.applicant.city|default:"" }}, {{ application.applicant.get_region_display|default:"" }}, Philippines</span>
                         </div>
                     </div>
                 </div>
@@ -118,7 +118,12 @@
                     <div class="mb-4">
                         <span class="text-muted small text-uppercase d-block mb-1">Scholarship Program</span>
                         <p class="fw-medium mb-1">{{ application.program.name }}</p>
-                        <p class="text-muted small">Amount: ${{ application.program.amount|floatformat:2 }} | Deadline: {{ application.program.deadline }}</p>
+                        <p class="text-muted small">Amount: ₱{{ application.program.amount|floatformat:2 }} | Deadline: {{ application.program.deadline }}</p>
+                        {% if application.program.eligible_regions %}
+                            <span class="badge bg-info-soft small">Eligible Regions: {{ application.program.eligible_regions }}</span>
+                        {% else %}
+                            <span class="badge bg-success-soft small">Nationwide</span>
+                        {% endif %}
                     </div>
                     <div class="mb-4">
                         <span class="text-muted small text-uppercase d-block mb-1">Personal Statement</span>

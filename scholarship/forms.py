@@ -58,21 +58,36 @@ class HoneypotRegistrationForm(UserCreationForm):
             raise forms.ValidationError("An account with this email already exists.")
         return email
 
+
 # ── Applicant Profile Form ──────────────────────────────────────────────────
 class ApplicantProfileForm(forms.ModelForm):
     class Meta:
         model = ApplicantProfile
-        fields = ['phone', 'date_of_birth', 'gender', 'address', 'city', 'region', 'country', 'national_id']
+        fields = ['phone', 'date_of_birth', 'gender', 'address', 'city', 'region', 'national_id']
         widgets = {
-            'phone': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '+1 234 567 8900'}),
+            'phone': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': '09171234567 or +639171234567'
+            }),
             'date_of_birth': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'gender': forms.Select(attrs={'class': 'form-select'}),
-            'address': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Street address'}),
-            'city': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'City'}),
-            'region': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'State / Region'}),
-            'country': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Country'}),
-            'national_id': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'National ID / Passport Number'}),
+            'address': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 3,
+                'placeholder': 'Street address, Barangay'
+            }),
+            'city': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'e.g., Cebu City, Davao City, Quezon City'
+            }),
+            'region': forms.Select(attrs={'class': 'form-select'}),
+            'national_id': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'UMID, Passport, Drivers License, or PhilSys ID number'
+            }),
         }
+    
+
 
 # ── Educational Background Form (for Formsets) ──────────────────────────────
 class EducationalBackgroundForm(forms.ModelForm):
@@ -80,14 +95,23 @@ class EducationalBackgroundForm(forms.ModelForm):
         model = EducationalBackground
         fields = ['institution_name', 'degree_type', 'field_of_study', 'start_date', 'end_date', 'is_current', 'gpa', 'country']
         widgets = {
-            'institution_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'University / School Name'}),
+            'institution_name': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'University / School Name (e.g., UP Diliman, De La Salle University)'
+            }),
             'degree_type': forms.Select(attrs={'class': 'form-select'}),
-            'field_of_study': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g., Computer Science'}),
+            'field_of_study': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'e.g., Computer Science, Nursing, Education'
+            }),
             'start_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'end_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'is_current': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
-            'gpa': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'min': '0', 'max': '4.0'}),
-            'country': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Country of Institution'}),
+            'gpa': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'min': '0', 'max': '5.0'}),
+            'country': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Philippines'
+            }),
         }
 
     def clean(self):
@@ -104,6 +128,7 @@ class EducationalBackgroundForm(forms.ModelForm):
 
         return cleaned_data
 
+
 # Create the inline formset factory
 EducationalBackgroundFormSet = inlineformset_factory(
     ApplicantProfile,
@@ -116,6 +141,7 @@ EducationalBackgroundFormSet = inlineformset_factory(
     max_num=5,
     validate_max=True,
 )
+
 
 # ── Scholarship Application Form ────────────────────────────────────────────
 class ScholarshipApplicationForm(forms.ModelForm):
@@ -137,10 +163,20 @@ class ScholarshipApplicationForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
+        self.applicant_profile = kwargs.pop('applicant_profile', None)
         super().__init__(*args, **kwargs)
         # Only show active programs
-        self.fields['program'].queryset = ScholarshipProgram.objects.filter(is_active=True, deadline__gte=timezone.now().date())
+        queryset = ScholarshipProgram.objects.filter(is_active=True, deadline__gte=timezone.now().date())
+        # If applicant has a region, filter by eligibility
+        if self.applicant_profile and self.applicant_profile.region:
+            from django.db.models import Q
+            queryset = queryset.filter(
+                Q(eligible_regions='') |
+                Q(eligible_regions__contains=self.applicant_profile.region)
+            )
+        self.fields['program'].queryset = queryset
         self.fields['program'].empty_label = "Select a Scholarship Program"
+
 
 # ── KYC Document Upload Form ────────────────────────────────────────────────
 class KYCDocumentForm(forms.ModelForm):
@@ -151,6 +187,7 @@ class KYCDocumentForm(forms.ModelForm):
             'document_type': forms.Select(attrs={'class': 'form-select'}),
             'file': forms.FileInput(attrs={'class': 'form-control', 'accept': '.pdf,.jpg,.jpeg,.png'}),
         }
+
 
 # ── Coordinator Bulk Action Form ────────────────────────────────────────────
 class BulkActionForm(forms.Form):
@@ -168,6 +205,7 @@ class BulkActionForm(forms.Form):
         widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Add notes for selected applicants...'})
     )
 
+
 # ── Coordinator Status Update Form ──────────────────────────────────────────
 class StatusUpdateForm(forms.ModelForm):
     class Meta:
@@ -177,6 +215,7 @@ class StatusUpdateForm(forms.ModelForm):
             'status': forms.Select(attrs={'class': 'form-select'}),
             'coordinator_notes': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
         }
+
 
 # ── Document Verification Form ──────────────────────────────────────────────
 class DocumentVerificationForm(forms.ModelForm):

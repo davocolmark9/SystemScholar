@@ -1,7 +1,17 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.urls import reverse
+from django.core.exceptions import ValidationError
+import re
 import uuid
+
+
+def validate_ph_phone(value):
+    """Validate Philippine mobile number format."""
+    pattern = r'^(?:\+63|0)?9\d{9}$'
+    if not re.match(pattern, value):
+        raise ValidationError('Enter a valid Philippine mobile number (e.g., 09171234567 or +639171234567).')
+
 
 # ── Scholarship Program ──────────────────────────────────────────────────────
 class ScholarshipProgram(models.Model):
@@ -12,11 +22,25 @@ class ScholarshipProgram(models.Model):
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    # NEW: Region eligibility (blank = nationwide)
+    eligible_regions = models.CharField(
+        max_length=200,
+        blank=True,
+        help_text="Comma-separated region codes (e.g., 'VI,VII,VIII'). Leave blank for nationwide."
+    )
+
     class Meta:
         ordering = ['-created_at']
 
     def __str__(self):
         return self.name
+
+    def is_region_eligible(self, region_code):
+        """Check if a region code is eligible for this program."""
+        if not self.eligible_regions:
+            return True
+        return region_code in self.eligible_regions.split(',')
+
 
 # ── Applicant Profile ────────────────────────────────────────────────────────
 class ApplicantProfile(models.Model):
@@ -27,20 +51,42 @@ class ApplicantProfile(models.Model):
         ('N', 'Prefer not to say'),
     ]
 
+    # Philippine Regions
+    PH_REGIONS = [
+        ('NCR', 'National Capital Region (NCR)'),
+        ('CAR', 'Cordillera Administrative Region (CAR)'),
+        ('I', 'Region I - Ilocos'),
+        ('II', 'Region II - Cagayan Valley'),
+        ('III', 'Region III - Central Luzon'),
+        ('IV-A', 'Region IV-A - CALABARZON'),
+        ('IV-B', 'Region IV-B - MIMAROPA'),
+        ('V', 'Region V - Bicol'),
+        ('VI', 'Region VI - Western Visayas'),
+        ('VII', 'Region VII - Central Visayas'),
+        ('VIII', 'Region VIII - Eastern Visayas'),
+        ('IX', 'Region IX - Zamboanga Peninsula'),
+        ('X', 'Region X - Northern Mindanao'),
+        ('XI', 'Region XI - Davao Region'),
+        ('XII', 'Region XII - SOCCSKSARGEN'),
+        ('XIII', 'Region XIII - Caraga'),
+        ('BARMM', 'Bangsamoro Autonomous Region in Muslim Mindanao (BARMM)'),
+    ]
+
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
-    phone = models.CharField(max_length=20, blank=True)
+    phone = models.CharField(max_length=20, blank=True, validators=[validate_ph_phone])
     date_of_birth = models.DateField(null=True, blank=True)
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, blank=True)
     address = models.TextField(blank=True)
     city = models.CharField(max_length=100, blank=True)
-    region = models.CharField(max_length=100, blank=True)
-    country = models.CharField(max_length=100, blank=True)
-    national_id = models.CharField(max_length=50, blank=True, help_text="Government-issued ID number")
+    region = models.CharField(max_length=10, choices=PH_REGIONS, blank=True)
+    country = models.CharField(max_length=50, default='Philippines', editable=False)
+    national_id = models.CharField(max_length=50, blank=True, help_text="Philippine government-issued ID (e.g., UMID, Passport, Driver's License, PhilSys ID)")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"{self.user.get_full_name() or self.user.username}"
+
 
 # ── Educational Background (Formset Model) ──────────────────────────────────
 class EducationalBackground(models.Model):
@@ -61,7 +107,7 @@ class EducationalBackground(models.Model):
     end_date = models.DateField(null=True, blank=True)
     is_current = models.BooleanField(default=False)
     gpa = models.DecimalField(max_digits=3, decimal_places=2, null=True, blank=True)
-    country = models.CharField(max_length=100, blank=True)
+    country = models.CharField(max_length=100, blank=True, default='Philippines')
 
     class Meta:
         ordering = ['-end_date', '-start_date']
@@ -69,6 +115,7 @@ class EducationalBackground(models.Model):
 
     def __str__(self):
         return f"{self.degree_type} at {self.institution_name}"
+
 
 # ── Scholarship Application ─────────────────────────────────────────────────
 class ScholarshipApplication(models.Model):
@@ -114,13 +161,16 @@ class ScholarshipApplication(models.Model):
     def get_absolute_url(self):
         return reverse('application_detail', kwargs={'pk': self.pk})
 
+
 # ── KYC Document Upload (Cloudinary) ────────────────────────────────────────
 class KYCDocument(models.Model):
     DOCUMENT_TYPES = [
-        ('national_id', 'National ID / Passport'),
-        ('birth_cert', 'Birth Certificate'),
-        ('transcript', 'Academic Transcript'),
-        ('income_proof', 'Proof of Income'),
+        ('national_id', 'Philippine National ID / UMID'),
+        ('passport', 'Philippine Passport'),
+        ('drivers_license', "Driver's License"),
+        ('birth_cert', 'Philippine Birth Certificate (PSA)'),
+        ('transcript', 'Academic Transcript (CHED/DepEd)'),
+        ('income_proof', 'Proof of Income (BIR / Barangay Certificate)'),
         ('recommendation', 'Recommendation Letter'),
         ('other', 'Other Supporting Document'),
     ]
@@ -147,6 +197,7 @@ class KYCDocument(models.Model):
 
     def __str__(self):
         return f"{self.get_document_type_display()} - {self.application}"
+
 
 # ── Application Activity Log (Audit Trail) ───────────────────────────────
 class ApplicationActivityLog(models.Model):

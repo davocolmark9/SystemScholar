@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load scholarship_extras %}
 
-{% block title %}Coordinator Dashboard - Regional Scholarship Portal{% endblock %}
+{% block title %}Coordinator Dashboard - Philippine Scholarship Portal{% endblock %}
 
 {% block content %}
 <div class="container-fluid py-4">
@@ -9,7 +9,7 @@
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
         <div>
             <h2 class="h3 fw-bold mb-1">Coordinator Dashboard</h2>
-            <p class="text-muted mb-0">Manage and process scholarship applications</p>
+            <p class="text-muted mb-0">Manage and process Philippine scholarship applications</p>
         </div>
         <span class="badge bg-primary-soft px-3 py-2">
             <i class="bi bi-shield-check me-1"></i>Coordinator Access
@@ -66,13 +66,11 @@
                 </select>
             </div>
             <div class="col-md-2">
-                <label class="form-label small fw-medium">Region</label>
+                <label class="form-label small fw-medium">Philippine Region</label>
                 <select name="region" class="form-select form-select-sm">
                     <option value="">All Regions</option>
-                    {% for region in regions %}
-                        {% if region %}
-                            <option value="{{ region }}" {% if filters.region == region %}selected{% endif %}>{{ region }}</option>
-                        {% endif %}
+                    {% for code, name in regions %}
+                        <option value="{{ code }}" {% if filters.region == code %}selected{% endif %}>{{ name }}</option>
                     {% endfor %}
                 </select>
             </div>
@@ -134,7 +132,7 @@
                             <th>Application</th>
                             <th>Applicant</th>
                             <th>Program</th>
-                            <th>Region</th>
+                            <th>Philippine Region</th>
                             <th>Status</th>
                             <th>Submitted</th>
                             <th>Docs</th>
@@ -160,7 +158,13 @@
                                     </div>
                                 </td>
                                 <td class="small">{{ app.program.name|truncatechars:25 }}</td>
-                                <td class="small">{{ app.applicant.region|default:"—" }}</td>
+                                <td class="small">
+                                    {% if app.applicant.region %}
+                                        <span class="badge bg-info-soft">{{ app.applicant.get_region_display }}</span>
+                                    {% else %}
+                                        —
+                                    {% endif %}
+                                </td>
                                 <td>
                                     <span class="badge {{ app.status|status_badge_class }}">{{ app.get_status_display }}</span>
                                 </td>

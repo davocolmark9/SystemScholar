@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load scholarship_extras %}
 
-{% block title %}Application #{{ application.id }} - Regional Scholarship Portal{% endblock %}
+{% block title %}Application #{{ application.id }} - Philippine Scholarship Portal{% endblock %}
 
 {% block content %}
 <div class="container py-4">
@@ -47,7 +47,7 @@
                             <p class="text-muted small mb-0">{{ application.program.description|truncatewords:30 }}</p>
                         </div>
                         <div class="text-end">
-                            <div class="h4 fw-bold text-primary mb-0">${{ application.program.amount|floatformat:2 }}</div>
+                            <div class="h4 fw-bold text-primary mb-0">₱{{ application.program.amount|floatformat:2 }}</div>
                             <span class="text-muted small">Award Amount</span>
                         </div>
                     </div>
