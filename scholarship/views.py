@@ -346,19 +346,27 @@ def coordinator_application_detail(request, pk):
     if request.method == 'POST':
         status_form = StatusUpdateForm(request.POST, instance=application)
         if status_form.is_valid():
+            from django.db import IntegrityError
             old_status = application.status
             updated_app = status_form.save(commit=False)
             updated_app.reviewed_by = request.user
             updated_app.reviewed_at = timezone.now()
-            updated_app.save()
 
-            log_activity(
-                application, 'status_changed', request.user,
-                f'Status changed from {old_status} to {updated_app.status}',
-                old_value=old_status,
-                new_value=updated_app.status
-            )
-            messages.success(request, f'Application status updated to {updated_app.get_status_display()}.')
+            try:
+                updated_app.save()
+                log_activity(
+                    application, 'status_changed', request.user,
+                    f'Status changed from {old_status} to {updated_app.status}',
+                    old_value=old_status,
+                    new_value=updated_app.status
+                )
+                messages.success(request, f'Application status updated to {updated_app.get_status_display()}.')
+            except IntegrityError:
+                messages.error(
+                    request,
+                    'Cannot update status: this applicant already has another active application for this program. '
+                    'Please reject or archive the other application first.'
+                )
             return redirect('coordinator_application_detail', pk=pk)
     else:
         status_form = StatusUpdateForm(instance=application)
@@ -377,6 +385,8 @@ def coordinator_application_detail(request, pk):
 @require_POST
 def bulk_action(request):
     """Process bulk actions on multiple applications."""
+    from django.db import IntegrityError
+
     form = BulkActionForm(request.POST)
     if form.is_valid():
         action = form.cleaned_data['action']
@@ -385,6 +395,7 @@ def bulk_action(request):
 
         applications = ScholarshipApplication.objects.filter(pk__in=app_ids)
         updated_count = 0
+        skipped_count = 0
 
         for app in applications:
             old_status = app.status
@@ -393,17 +404,34 @@ def bulk_action(request):
             app.reviewed_at = timezone.now()
             if notes:
                 app.coordinator_notes = notes
-            app.save()
 
-            log_activity(
-                app, 'bulk_action', request.user,
-                f'Bulk action: status changed to {action}',
-                old_value=old_status,
-                new_value=action
+            try:
+                app.save()
+                log_activity(
+                    app, 'bulk_action', request.user,
+                    f'Bulk action: status changed to {action}',
+                    old_value=old_status,
+                    new_value=action
+                )
+                updated_count += 1
+            except IntegrityError:
+                # Skip if this would violate the unique constraint
+                # (e.g., applicant already has another active application for this program)
+                skipped_count += 1
+                log_activity(
+                    app, 'bulk_action', request.user,
+                    f'Bulk action SKIPPED: applicant already has an active application for this program',
+                    old_value=old_status,
+                    new_value=action
+                )
+
+        if updated_count > 0:
+            messages.success(request, f'{updated_count} application(s) updated successfully.')
+        if skipped_count > 0:
+            messages.warning(
+                request,
+                f'{skipped_count} application(s) skipped because the applicant already has an active application for that program.'
             )
-            updated_count += 1
-
-        messages.success(request, f'{updated_count} application(s) updated successfully.')
     else:
         messages.error(request, 'Invalid bulk action form.')
 

@@ -150,15 +150,8 @@ class ScholarshipApplication(models.Model):
 
     class Meta:
         ordering = ['-created_at']
-        # Prevent duplicate applications to same program
-        # Note: This constraint is also enforced in views for better error handling
-        constraints = [
-            models.UniqueConstraint(
-                fields=['applicant', 'program'],
-                condition=models.Q(status='submitted') | models.Q(status='under_review') | models.Q(status='documents_pending') | models.Q(status='approved'),
-                name='unique_active_application'
-            ),
-        ]
+        # Note: Duplicate active application prevention is handled in views (apply_scholarship)
+        # instead of DB constraint to allow better error messages and coordinator flexibility
 
     def __str__(self):
         return f"Application #{self.id} - {self.applicant} for {self.program}"
