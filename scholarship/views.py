@@ -133,6 +133,10 @@ def apply_scholarship(request):
     """Create a new scholarship application."""
     profile, created = ApplicantProfile.objects.get_or_create(user=request.user)
 
+    # Debug: Check available programs
+    from django.utils import timezone
+    all_active = ScholarshipProgram.objects.filter(is_active=True, deadline__gte=timezone.now().date())
+
     if request.method == 'POST':
         form = ScholarshipApplicationForm(request.POST, applicant_profile=profile)
         if form.is_valid():
@@ -141,7 +145,7 @@ def apply_scholarship(request):
 
             # Check region eligibility
             program = application.program
-            if not program.is_region_eligible(profile.region):
+            if profile.region and not program.is_region_eligible(profile.region):
                 messages.error(
                     request,
                     f'Sorry, the "{program.name}" scholarship is not available in {profile.get_region_display()}. '
@@ -156,7 +160,10 @@ def apply_scholarship(request):
     else:
         form = ScholarshipApplicationForm(applicant_profile=profile)
 
-    return render(request, 'scholarship/apply.html', {'form': form})
+    return render(request, 'scholarship/apply.html', {
+        'form': form,
+        'debug_programs_count': all_active.count(),  # Remove after debugging
+    })
 
 
 @login_required

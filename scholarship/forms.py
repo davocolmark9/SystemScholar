@@ -3,6 +3,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.forms.models import inlineformset_factory
 from django.utils import timezone
+from django.db.models import Q
 from .models import (
     ApplicantProfile, EducationalBackground, ScholarshipApplication,
     ScholarshipProgram, KYCDocument
@@ -83,10 +84,9 @@ class ApplicantProfileForm(forms.ModelForm):
             'region': forms.Select(attrs={'class': 'form-select'}),
             'national_id': forms.TextInput(attrs={
                 'class': 'form-control',
-                'placeholder': 'UMID, Passport, Drivers License, or PhilSys ID number'
+                'placeholder': 'UMID, Passport, Driver\'s License, or PhilSys ID number'
             }),
         }
-    
 
 
 # ── Educational Background Form (for Formsets) ──────────────────────────────
@@ -165,15 +165,20 @@ class ScholarshipApplicationForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.applicant_profile = kwargs.pop('applicant_profile', None)
         super().__init__(*args, **kwargs)
-        # Only show active programs
+
+        # Base queryset: active programs with future deadlines
         queryset = ScholarshipProgram.objects.filter(is_active=True, deadline__gte=timezone.now().date())
-        # If applicant has a region, filter by eligibility
+
+        # If applicant has a region set, filter by eligibility
+        # Programs with empty/null eligible_regions are available to ALL regions
         if self.applicant_profile and self.applicant_profile.region:
-            from django.db.models import Q
             queryset = queryset.filter(
                 Q(eligible_regions='') |
+                Q(eligible_regions__isnull=True) |
                 Q(eligible_regions__contains=self.applicant_profile.region)
             )
+        # If no region set, show ALL active programs (don't filter by region)
+
         self.fields['program'].queryset = queryset
         self.fields['program'].empty_label = "Select a Scholarship Program"
 
