@@ -424,3 +424,36 @@ def verify_document(request, doc_id):
         messages.success(request, 'Document verification status updated.')
 
     return redirect('coordinator_application_detail', pk=document.application.pk)
+
+from django.http import JsonResponse
+
+@login_required
+def debug_programs(request):
+    """Temporary debug - REMOVE AFTER FIXING"""
+    from django.utils import timezone
+    from django.db.models import Q
+    
+    profile = request.user.profile
+    all_prog = ScholarshipProgram.objects.all()
+    active = all_prog.filter(is_active=True)
+    future = active.filter(deadline__gte=timezone.now().date())
+    
+    if profile.region:
+        filtered = future.filter(
+            Q(eligible_regions='') | Q(eligible_regions__isnull=True) |
+            Q(eligible_regions__contains=profile.region)
+        )
+    else:
+        filtered = future
+    
+    return JsonResponse({
+        'today': str(timezone.now().date()),
+        'your_region': profile.region or 'NOT SET',
+        'counts': {
+            'all': all_prog.count(),
+            'active': active.count(),
+            'future_deadline': future.count(),
+            'after_region_filter': filtered.count(),
+        },
+        'programs': list(all_prog.values('name', 'is_active', 'deadline', 'eligible_regions'))
+    }, json_dumps_params={'indent': 2})
