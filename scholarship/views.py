@@ -220,11 +220,21 @@ def submit_application(request, pk):
         messages.error(request, 'Please upload at least one KYC document before submitting.')
         return redirect('application_detail', pk=pk)
 
-    application.status = 'submitted'
-    application.submitted_at = timezone.now()
-    application.save()
-    log_activity(application, 'submitted', request.user, 'Application submitted for review')
-    messages.success(request, 'Application submitted successfully! You will be notified of updates.')
+    # Check for duplicate active application constraint BEFORE saving
+    from django.db import IntegrityError
+    try:
+        application.status = 'submitted'
+        application.submitted_at = timezone.now()
+        application.save()
+        log_activity(application, 'submitted', request.user, 'Application submitted for review')
+        messages.success(request, 'Application submitted successfully! You will be notified of updates.')
+    except IntegrityError:
+        messages.error(
+            request,
+            'You already have an active application for this program. '
+            'You can only have one active application per scholarship program at a time.'
+        )
+
     return redirect('dashboard')
 
 
@@ -424,36 +434,3 @@ def verify_document(request, doc_id):
         messages.success(request, 'Document verification status updated.')
 
     return redirect('coordinator_application_detail', pk=document.application.pk)
-
-from django.http import JsonResponse
-
-@login_required
-def debug_programs(request):
-    """Temporary debug - REMOVE AFTER FIXING"""
-    from django.utils import timezone
-    from django.db.models import Q
-    
-    profile = request.user.profile
-    all_prog = ScholarshipProgram.objects.all()
-    active = all_prog.filter(is_active=True)
-    future = active.filter(deadline__gte=timezone.now().date())
-    
-    if profile.region:
-        filtered = future.filter(
-            Q(eligible_regions='') | Q(eligible_regions__isnull=True) |
-            Q(eligible_regions__contains=profile.region)
-        )
-    else:
-        filtered = future
-    
-    return JsonResponse({
-        'today': str(timezone.now().date()),
-        'your_region': profile.region or 'NOT SET',
-        'counts': {
-            'all': all_prog.count(),
-            'active': active.count(),
-            'future_deadline': future.count(),
-            'after_region_filter': filtered.count(),
-        },
-        'programs': list(all_prog.values('name', 'is_active', 'deadline', 'eligible_regions'))
-    }, json_dumps_params={'indent': 2})
